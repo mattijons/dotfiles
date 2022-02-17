@@ -1,0 +1,259 @@
+
+set nocompatible
+set nocompatible
+
+""""""""""""""""""
+" PLugin manager "
+""""""""""""""""""
+
+" PlugInstall
+call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
+
+    Plug 'ctrlpvim/ctrlp.vim'
+    Plug 'jacoborus/tender.vim'
+    Plug 'fatih/vim-go'
+    Plug 'julialang/julia-vim'
+    Plug 'matze/vim-move'
+    Plug 'wellle/targets.vim'
+    Plug 'raimondi/delimitmate'
+    Plug 'tomtom/tcomment_vim'
+    Plug 'tpope/vim-repeat'
+    Plug 'tpope/vim-vinegar'
+    Plug 'tpope/vim-surround'
+    Plug 'unblevable/quick-scope'
+    Plug 'mhinz/vim-startify'
+    Plug 'itchyny/lightline.vim'
+    Plug 'rhysd/vim-color-spring-night'
+    Plug 'machakann/vim-highlightedyank'
+    Plug 'sheerun/vim-polyglot'
+    Plug 'christoomey/vim-tmux-navigator'
+
+call plug#end()
+
+" Enable built-in matchit plugin
+runtime macros/matchit.vim
+
+" hi NormalNC guibg=#0A1119
+" hi NormalNC guibg=#0d1723
+hi NormalNC guibg=#0b141e
+au WinEnter * setl wincolor=
+au WinLeave * setl wincolor=NormalNC
+
+" #==============================[Files & Folders]==============================#
+set path+=**
+
+set wildmenu
+
+"set hidden
+
+:command Boldfiles browse oldfiles
+
+" #==============================[Mappings]==============================#
+" Unmap Ex mode while in normal mode
+nmap Q <Nop>
+
+" Set leader to space
+let mapleader=" "
+
+" Quick copy
+nmap <Leader>y yiw
+
+" Quick replace word with paste
+nmap <Leader>r viwp
+
+" Quick save (write)
+nmap <Leader>w :w<CR>
+
+" Copy from cursor to end of line
+nmap Y y$
+
+" Reselect entered text
+nnoremap gV `[v`]
+
+" Duplicates then regains selection
+vmap Y y`>pgv
+
+" #==============================[Movement]==============================#
+" j and k move visually
+nnoremap k gk
+nnoremap j gj
+
+" Enter a blank line above and below the cursor.
+" nnoremap [<space>  O<esc>j
+" nnoremap ]<space>  o<esc>k
+nnoremap <leader>k  O<esc>j
+nnoremap <leader>j  o<esc>k
+
+" vim-move: Use HJKL to move blocks
+let g:move_map_keys = 0
+vmap J <Plug>MoveBlockDown
+vmap K <Plug>MoveBlockUp
+" vmap H <Plug>MoveBlockLeft         buggy
+" vmap L <Plug>MoveBlockRight        buggy
+
+" Move to end of line in insert mode
+inoremap <C-l> <C-o>$
+
+" Center screen in insert mode
+inoremap <C-z> <C-o>zz
+
+" Center when moving between paragraphs
+" nnoremap { {zz
+" nnoremap } }zz
+
+" #==============================[Lines]==============================#
+" Hybrid line numbers
+set number! relativenumber!
+
+" Highlight current line
+set cursorline
+hi CursorLine cterm=NONE ctermbg=0 guibg=lightgrey
+
+" Only highlight in active window
+augroup CursorLineOnlyInActiveWindow
+    autocmd!
+    autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    autocmd WinLeave * setlocal nocursorline
+augroup END
+
+set laststatus=2
+
+" Show tabs as › and trailing whitespace as •
+set list
+set listchars=tab:›\ ,trail:•,extends:#,nbsp:.
+
+" Comments do not wrap when hitting enter
+set formatoptions-=cro
+
+" Fold using indentation
+set foldmethod=syntax
+
+" All folds open
+set foldlevelstart=99
+
+" #==============================[Search]==============================#
+" Enable search highlighting
+set hlsearch
+" Enable incremental search
+set incsearch
+
+" Keep searches in the middle of the screen
+nnoremap n nzz
+nnoremap N Nzz
+
+" Center search on <ENTER>
+function! CenterSearch()
+  let cmdtype = getcmdtype()
+  if cmdtype == '/' || cmdtype == '?'
+    return "\<enter>zz"
+  endif
+  return "\<enter>"
+endfunction
+
+cnoremap <silent> <expr> <enter> CenterSearch()
+
+" Turn off search highlighting
+nnoremap <leader>/ :nohlsearch<cr>
+
+" Ignore case when searching lowercase
+set ignorecase
+
+" Don't ignore case when searching uppercase
+set smartcase
+
+" Quick search and replace ("." to confirm, "n" to skip)
+nnoremap c* /\<<C-R>=expand('<cword>')<CR>\>\C<CR>``cgn
+nnoremap c# ?\<<C-R>=expand('<cword>')<CR>\>\C<CR>``cgN
+
+" #==============================[Tabs/Spaces]==============================#
+" Tab becomes 4 spaces
+set tabstop=4
+
+" Indents are 4 spaces
+set shiftwidth=4
+
+" Tab and backspace deletes 4 spaces
+set softtabstop=4
+
+" Spaces instead of tab characters 
+set expandtab
+
+" If at the beginning of a line, go to the next indent when tab is pressed
+set smarttab
+
+" #==============================[Windows]==============================#
+" More natural splitting
+set splitright splitbelow
+
+" Easier moving between windows
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Mark two windows (MarkA/B) then swap with :SwapWindows
+command! -bar MarkA :let WinNumA = winnr() | let WinBufA = bufnr("%")
+command! -bar MarkB :let WinNumB = winnr() | let WinBufB = bufnr("%")
+
+" Swap windows marked A and B
+function! SwapAB()
+  exec  g:WinNumA . " wincmd w" ."|".
+      \ "buffer ". g:WinBufB ."|".
+      \ g:WinNumB ." wincmd w" ."|".
+      \ "buffer ". g:WinBufA
+  let l:tmp = g:WinNumA
+  let g:WinNumA = g:WinNumB
+  let g:WinNumB = l:tmp
+endfunction
+
+command! SwapWindows :call SwapAB()
+
+" #==============================[Quick-Scope]==============================#
+" Custom highlighting
+augroup qs_colors
+    autocmd!
+    autocmd ColorScheme * highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline " green
+    autocmd ColorScheme * highlight QuickScopeSecondary guifg='#FF00FF' gui=underline ctermfg=81 cterm=underline " magenta
+    " autocmd ColorScheme * highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=underline " cyan
+augroup END
+
+" #==============================[vim-go]==============================#
+let g:GoPath = "$HOME/.go"
+
+let g:go_metalinter_autosave_enabled = ['vet', 'errcheck']
+" let g:go_metalinter_deadline = "5s"
+
+" #==============================[Themes]==============================#
+if (has("termguicolors"))
+ set termguicolors
+endif
+
+colorscheme tender
+let g:lightline = { 'colorscheme': 'wombat'}
+
+highlight HighlightedyankRegion cterm=reverse gui=reverse
+let g:highlightedyank_highlight_duration = 250 "milliseconds
+
+"#==============================[Startify]==============================#
+" Startify custom header
+let g:startify_custom_header=[
+    \ '                                           ',
+    \ '    ##############..... ##############     ',
+    \ '      ##############......##############   ',
+    \ '        ##########..........##########     ',
+    \ '        ##########........##########       ',
+    \ '        ##########.......##########        ',
+    \ '        ##########.....##########..        ',
+    \ '        ##########....##########.....      ',
+    \ '      ..##########..##########.........    ',
+    \ '    ....##########.#########.............  ',
+    \ '      ..################JJJ............    ',
+    \ '        ################.............      ',
+    \ '        ##############.JJJ.JJJJJJJJJJ      ',
+    \ '        ############...JJ...JJ..JJ  JJ     ',
+    \ '        ##########....JJ...JJ..JJ  JJ      ',
+    \ '        ########......JJJ..JJJ JJJ JJJ     ',
+    \ '        ######............                 ',
+    \ '                .......                    ',
+    \ '                                           ',
+    \ ]
