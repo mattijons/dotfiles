@@ -9,6 +9,8 @@ set nocompatible
 " PlugInstall
 call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
 
+    Plug 'airblade/vim-gitgutter'
+    Plug 'w0rp/ale'
     Plug 'ctrlpvim/ctrlp.vim'
     Plug 'jacoborus/tender.vim'
     Plug 'fatih/vim-go'
@@ -72,6 +74,13 @@ nnoremap gV `[v`]
 
 " Duplicates then regains selection
 vmap Y y`>pgv
+
+" Gitgutter hunk movement refocus
+nmap ]c <Plug>(GitGutterNextHunk) zz
+nmap [c <Plug>(GitGutterPrevHunk) zz
+
+" Toggle gitgutter
+nnoremap <leader>t :GitGutterToggle<cr>
 
 " #==============================[Movement]==============================#
 " j and k move visually
