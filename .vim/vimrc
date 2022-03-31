@@ -1,5 +1,3 @@
-
-set nocompatible
 set nocompatible
 
 """"""""""""""""""
@@ -9,9 +7,11 @@ set nocompatible
 " PlugInstall
 call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
 
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+    Plug 'tpope/vim-fugitive'
     Plug 'airblade/vim-gitgutter'
     Plug 'w0rp/ale'
-    Plug 'ctrlpvim/ctrlp.vim'
     Plug 'jacoborus/tender.vim'
     Plug 'fatih/vim-go'
     Plug 'julialang/julia-vim'
@@ -50,6 +50,23 @@ set wildmenu
 
 :command Boldfiles browse oldfiles
 
+" fzf fuzzy file finder
+set rtp+=/usr/bin/fzf
+nmap <C-P> :GFiles<CR>
+
+" fzf ripgrep, search only file contents
+" command! -bang -nargs=* Rg 
+"     \ call fzf#vim#grep(
+"     \ 'rg --column --line-number --no-heading --color=always --smart-case'.shellescape(<q-args>), 1,
+"     \ fzf#vim#with_preview({'options': '--delimiter : --nth 4.'}), <bang>0)
+
+command! -bang -nargs=* Rg
+    \ call fzf#vim#grep(
+    \ "rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,
+    \ fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
+
+nnoremap <C-g> :Rg! 
+
 " #==============================[Mappings]==============================#
 " Unmap Ex mode while in normal mode
 nmap Q <Nop>
@@ -80,7 +97,7 @@ nmap ]c <Plug>(GitGutterNextHunk) zz
 nmap [c <Plug>(GitGutterPrevHunk) zz
 
 " Toggle gitgutter
-nnoremap <leader>t :GitGutterToggle<cr>
+nnoremap <leader>gt :GitGutterToggle<cr>
 
 " #==============================[Movement]==============================#
 " j and k move visually
@@ -130,6 +147,9 @@ set laststatus=2
 " Show tabs as › and trailing whitespace as •
 set list
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:.
+
+" Remove trailing whitespace
+command RemoveTrailingWhitespace :%s/\s\+$//
 
 " Comments do not wrap when hitting enter
 set formatoptions-=cro
@@ -184,7 +204,7 @@ set shiftwidth=4
 " Tab and backspace deletes 4 spaces
 set softtabstop=4
 
-" Spaces instead of tab characters 
+" Spaces instead of tab characters
 set expandtab
 
 " If at the beginning of a line, go to the next indent when tab is pressed
@@ -232,13 +252,30 @@ let g:GoPath = "$HOME/.go"
 let g:go_metalinter_autosave_enabled = ['vet', 'errcheck']
 " let g:go_metalinter_deadline = "5s"
 
+" #==============================[ALE]==============================#
+let g:ale_linters={'python': ['pylint']}
+
+let g:ale_lint_on_save = 0
+let g:ale_lint_on_enter = 0
+
+nnoremap <leader>ga :ALEToggle<cr>
+
 " #==============================[Themes]==============================#
 if (has("termguicolors"))
  set termguicolors
 endif
 
 colorscheme tender
-let g:lightline = { 'colorscheme': 'wombat'}
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }
 
 highlight HighlightedyankRegion cterm=reverse gui=reverse
 let g:highlightedyank_highlight_duration = 250 "milliseconds
