@@ -29,6 +29,8 @@ call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
     Plug 'christoomey/vim-tmux-navigator'
     Plug 'majutsushi/tagbar'
     Plug 'jesseleite/vim-agriculture'
+    Plug 'SirVer/ultisnips'
+    Plug 'preservim/nerdtree'
 
 call plug#end()
 
@@ -165,7 +167,8 @@ set foldmethod=syntax
 " All folds open
 set foldlevelstart=99
 
-nnoremap <F4> :g/\s*if err != nil /normal za<CR> <C-O> :nohlsearch<CR>
+" NERDTree
+nnoremap <F4> :NERDTreeToggle<CR>
 
 " #==============================[Search]==============================#
 " Enable search highlighting
@@ -238,10 +241,17 @@ augroup END
 
 " #==============================[vim-go]==============================#
 let g:GoPath = "$HOME/.go"
+let g:go_guru_scope = ["..."]
 
 let g:go_metalinter_autosave_enabled = ['vet', 'errcheck']
-" let g:go_metalinter_deadline = "5s"
 
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_operators = 1
+
+nnoremap <Leader>gf :GoReferrers<CR>
 " #==============================[Themes]==============================#
 if (has("termguicolors"))
   set termguicolors
