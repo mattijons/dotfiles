@@ -65,6 +65,9 @@ bind -r h previous-window # select previous window
 bind -r l next-window     # select next window
 bind Tab last-window      # move to last active window
 
+bind -r k switch-client -p
+bind -r j switch-client -n
+
 # split current window horizontally
 bind - split-window -v
 # split current window vertically
