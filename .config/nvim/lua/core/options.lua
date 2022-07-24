@@ -1,6 +1,8 @@
 local g = vim.g
 local opt = vim.opt
 
+opt.encoding = 'utf-8'
+
 opt.undofile = true
 opt.swapfile = false
 
@@ -18,7 +20,12 @@ opt.softtabstop = 4
 
 opt.list = true
 -- TODO: make this work
--- opt.listchars = { tab = '›\\ ', trail = '•', extends = '#', nbsp = '.' }
+-- opt.listchars = { tab = '›\ ', trail = '•', extends = '#', nbsp = '.' }
+
+-- Show tabs as › and trailing whitespace as •
+vim.cmd [[
+  set listchars=tab:›\ ,trail:•,extends:#,nbsp:.
+]]
 
 opt.formatoptions = "cqj"
 

@@ -50,6 +50,9 @@ map('n', ']q', '<Plug>(qf_qf_next)zz')
 map('n', '[q', '<Plug>(qf_qf_prev)zz')
 
 map('n', '<F4>', ':NvimTreeToggle<CR>')
+
+-- Toggle listchars on/off (symbols for tabs, trailing whitespace etc.)
+map('n', '<Leader>gs', ':set list! list?<CR>')
 ----------------------------------------------
 
 ----------------------------------------------
@@ -62,8 +65,9 @@ map('n', '<C-b>', ':Telescope buffers<CR>')
 map('n', '<C-s>', ':Telescope oldfiles<CR>')
 
 map('n', 'Q', '<Nop>')
-map('n', '<S-q>', ':Telescope live_grep<CR>')
+map('n', '<S-q>', ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>") -- TODO: make better
 ----------------------------------------------
+
 
 -- Don't lose focus when visual tabbing
 map('v', '<', '<gv')

@@ -37,7 +37,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<Leader>d', '<Cmd>lua vim.diagnostic.setqflist()<CR>', opts)
 
   -- Format
-  buf_set_keymap("n", "<Leader>ff", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
+  --buf_set_keymap("n", "<Leader>ff", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
 
   -- Highligt word under cursor
   require('illuminate').on_attach(client)

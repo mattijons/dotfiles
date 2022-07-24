@@ -12,6 +12,7 @@ return require('packer').startup(function()
   use 'ojroques/nvim-hardline'
   use 'igemnace/vim-makery'
   use 'christoomey/vim-tmux-navigator'
+  -- use 'vimpostor/vim-tpipeline'
 
   -- Better quickfix
   use 'romainl/vim-qf'
@@ -24,6 +25,8 @@ return require('packer').startup(function()
   }
   -- Treesitter text objects
   use 'nvim-treesitter/nvim-treesitter-textobjects'
+  -- Treesitter text subjects
+  use 'RRethy/nvim-treesitter-textsubjects'
   -- Treesitter context
   use 'nvim-treesitter/nvim-treesitter-context'
 

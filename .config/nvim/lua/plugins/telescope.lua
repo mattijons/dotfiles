@@ -107,7 +107,7 @@ telescope.setup {
       auto_quoting = false,
       mappings = {
         i = {
-          ["<C-k>"] = lga_actions.quote_prompt(),
+          -- ["<C-k>"] = lga_actions.quote_prompt(),
           -- ["<C-l>g"] = lga_actions.quote_prompt({ postfix = ' --iglob ' }),
           -- ["<C-l>t"] = lga_actions.quote_prompt({ postfix = ' -t' }),
         }

@@ -18,6 +18,10 @@ treesitter.setup {
         -- You can use the capture groups defined in textobjects.scm
         ["af"] = "@function.outer",
         ["if"] = "@function.inner",
+        ["ac"] = "@conditional.outer",
+        ["ic"] = "@conditional.inner",
+        ["al"] = "@loop.outer",
+        ["il"] = "@loop.inner",
       },
     },
     move = {
@@ -31,6 +35,15 @@ treesitter.setup {
       },
     },
   },
+  -- textsubjects = {
+  --   enable = true,
+  --   prev_selection = ',', -- (Optional) keymap to select the previous selection
+  --   keymaps = {
+  --     ['.'] = 'textsubjects-smart',
+  --     [';'] = 'textsubjects-container-outer',
+  --     ['i;'] = 'textsubjects-container-inner',
+  --   },
+  -- },
 }
 
 local ok, treesitter_context = pcall(require, 'treesitter-context')

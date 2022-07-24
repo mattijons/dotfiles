@@ -11,6 +11,11 @@ autocmd('TextYankPost', {
   end
 })
 
+-- Use hard tabs in Go files
+vim.cmd [[
+    autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
+]]
+
 -- Forgot what this does
 vim.cmd [[
     autocmd User TelescopePreviewerLoaded setlocal number
