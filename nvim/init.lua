@@ -128,7 +128,7 @@ autocmd('TextYankPost', {
 local formatAutogroup = augroup('FormatAutogroup', { clear = true })
 autocmd('BufWritePost', {
     group = formatAutogroup,
-    pattern = '*.go',
+    pattern = {'*.go', '*.ts'},
     command = 'FormatWrite'
 })
 
@@ -298,10 +298,10 @@ require('lazy').setup {
             local telescope = require('telescope')
             local actions = require('telescope.actions')
 
-            local live_grep_actions = require("telescope-live-grep-args.actions")
+            local live_grep_actions = require('telescope-live-grep-args.actions')
             require('telescope').load_extension('live_grep_args')
 
-            require("telescope").load_extension('harpoon')
+            require('telescope').load_extension('harpoon')
 
             telescope.setup {
                 defaults = {
@@ -321,9 +321,9 @@ require('lazy').setup {
                             ['<C-j>'] = actions.move_selection_next,
                             ['<C-k>'] = actions.move_selection_previous,
 
-                            ["<C-x>"] = actions.delete_buffer,
+                            ['<C-x>'] = actions.delete_buffer,
 
-                            ["<C-o>"] = live_grep_actions.quote_prompt(),
+                            ['<C-o>'] = live_grep_actions.quote_prompt(),
                         }
                     }
                 },
@@ -338,7 +338,7 @@ require('lazy').setup {
                         auto_quoting = false,
                         mappings = {
                             i = {
-                                ["<C-o>"] = live_grep_actions.quote_prompt(),
+                                ['<C-o>'] = live_grep_actions.quote_prompt(),
                             }
                         }
                     }
@@ -348,11 +348,14 @@ require('lazy').setup {
     },
     { 'mhartington/formatter.nvim',
         config = function()
-            require("formatter").setup({
+            require('formatter').setup({
                 filetype = {
                     go = {
-                        require("formatter.filetypes.go").gofmt,
-                        require("formatter.filetypes.go").goimports,
+                        require('formatter.filetypes.go').gofmt,
+                        require('formatter.filetypes.go').goimports,
+                    },
+                    typescript = {
+                        require('formatter.filetypes.typescript').eslint_d,
                     }
                 }
             })
@@ -371,7 +374,7 @@ require('lazy').setup {
             'saadparwaiz1/cmp_luasnip',
             'L3MON4D3/LuaSnip',
             'rafamadriz/friendly-snippets',
-            { "lukas-reineke/lsp-format.nvim", config = true },
+            { 'lukas-reineke/lsp-format.nvim', config = true },
         },
         config = function()
             local lsp = require('lsp-zero')
@@ -380,9 +383,11 @@ require('lazy').setup {
             lsp.on_attach(
             -- TODO: Learn how to disable specific formatting
             -- function(client, bufnr)
-            --     require("lsp-format").on_attach(client, bufnr)
+            --     require('lsp-format').on_attach(client, bufnr)
             -- end
             )
+
+            lsp.ensure_installed({'eslint'})
 
             lsp.configure('pylsp', {
                 settings = {
@@ -401,15 +406,15 @@ require('lazy').setup {
                 settings = {
                     gopls = {
                         env = {
-                            GOOS = "linux",
-                            GOFLAGS = "-tags=linux,windows",
+                            GOOS = 'linux',
+                            GOFLAGS = '-tags=linux,windows',
                         },
                         buildFlags = {
-                            "-tags=!windows,integration"
+                            '-tags=!windows,integration'
                         },
                         directoryFilters = {
-                            "-cmd/nanitor-scap/internal/scap",
-                            "-cmd/nanitor-scap/internal/openscap",
+                            '-cmd/nanitor-scap/internal/scap',
+                            '-cmd/nanitor-scap/internal/openscap',
                         },
                     },
                 }
@@ -420,11 +425,12 @@ require('lazy').setup {
                 virtual_text = false,
                 underline = false
             }
+
         end
     },
-    { url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    { url = 'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
         config = function()
-            require("lsp_lines").setup()
+            require('lsp_lines').setup()
         end,
     },
     { 'nvim-treesitter/nvim-treesitter',
@@ -438,22 +444,22 @@ require('lazy').setup {
                         enable = true,
                         lookahead = true,
                         keymaps = {
-                            ["af"] = "@function.outer",
-                            ["if"] = "@function.inner",
-                            -- ["ac"] = "@conditional.outer",
-                            -- ["ic"] = "@conditional.inner",
-                            -- ["al"] = "@loop.outer",
-                            -- ["il"] = "@loop.inner",
+                            ['af'] = '@function.outer',
+                            ['if'] = '@function.inner',
+                            -- ['ac'] = '@conditional.outer',
+                            -- ['ic'] = '@conditional.inner',
+                            -- ['al'] = '@loop.outer',
+                            -- ['il'] = '@loop.inner',
                         },
                     },
                     move = {
                         enable = true,
                         set_jumps = true, -- whether to set jumps in the jumplist
                         goto_next_start = {
-                            ["]]"] = "@function.outer",
+                            [']]'] = '@function.outer',
                         },
                         goto_previous_start = {
-                            ["[["] = "@function.outer",
+                            ['[['] = '@function.outer',
                         },
                     },
                 },
