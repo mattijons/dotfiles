@@ -60,6 +60,10 @@ vim.keymap.set('i', '<C-l>', '<C-o>$')
 -- Center screen in insert mode
 vim.keymap.set('i', '<C-z>', '<C-o>zz')
 
+-- Move up and down visually
+vim.keymap.set('n', 'j', 'gj')
+vim.keymap.set('n', 'k', 'gk')
+
 vim.keymap.set('n', 'Q', '<Nop>')
 
 -- Toggle diagnostics lines
@@ -352,7 +356,7 @@ require('lazy').setup {
                 filetype = {
                     go = {
                         require('formatter.filetypes.go').gofmt,
-                        require('formatter.filetypes.go').goimports,
+                        -- require('formatter.filetypes.go').goimports,
                     },
                     typescript = {
                         require('formatter.filetypes.typescript').eslint_d,
@@ -416,6 +420,12 @@ require('lazy').setup {
                             '-cmd/nanitor-scap/internal/scap',
                             '-cmd/nanitor-scap/internal/openscap',
                         },
+                        staticcheck = true,
+                        analyses = {
+                            ST1006 = false, -- Poorly chosen receiver name (allow this/self)
+                            fieldalignment = false,
+                            nilness = true,
+                        },
                     },
                 }
             })
@@ -437,7 +447,7 @@ require('lazy').setup {
         build = ':TSUpdate',
         config = function()
             require('nvim-treesitter.configs').setup {
-                ensure_installed = { 'python', 'lua', 'go', 'typescript' },
+                ensure_installed = { 'python', 'lua', 'go', 'typescript', 'rust' },
                 highlight = { enable = true, },
                 textobjects = {
                     select = {
