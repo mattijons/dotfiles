@@ -35,6 +35,14 @@ vim.opt.foldlevel = 99
 vim.opt.foldlevelstart = 99
 vim.opt.foldenable = true
 
+vim.opt.list = true
+vim.opt.listchars = {
+    tab = '› ',
+    trail = '•',
+    extends = '#',
+    nbsp = '.',
+}
+
 -- Run make inside docker container
 vim.g['makery_config'] = {
     ['~/dev/nanitor'] = {
