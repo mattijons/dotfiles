@@ -52,11 +52,6 @@ vim.g['makery_config'] = {
     }
 }
 
--- -- Show tabs as › and trailing whitespace as •
--- vim.cmd[[
---   set listchars=tab:›\ ,trail:•,extends:#,nbsp:.
--- ]]
-
 -------------------------------------------------------------------------------
 -- Keymap
 -------------------------------------------------------------------------------
@@ -164,6 +159,14 @@ autocmd({ 'ColorScheme' }, {
 autocmd({ 'ColorScheme' }, {
     group = quickscopeColors,
     command = "highlight QuickScopeSecondary guifg='#FF00FF' gui=underline ctermfg=201 cterm=underline",
+})
+
+-- Turn off expandtab in go files
+local noExpandtab = augroup('NoExpandtab', { clear = true })
+autocmd({ 'FileType' }, {
+    group = noExpandtab,
+    pattern = { 'go' },
+    command = 'set expandtab!'
 })
 
 -------------------------------------------------------------------------------
