@@ -292,11 +292,15 @@ require('lazy').setup {
     },
     {
         'nvim-tree/nvim-tree.lua',
-        config = true,
         requires = {
             'nvim-tree/nvim-web-devicons',
         },
-        tag = 'nightly'
+        tag = 'nightly',
+        config = function()
+            require('nvim-tree').setup({
+                open_on_setup = true
+            })
+        end
     },
     {
         'nvim-telescope/telescope-fzf-native.nvim',
@@ -434,7 +438,7 @@ require('lazy').setup {
                         staticcheck = true,
                         analyses = {
                             ST1006 = false, -- Poorly chosen receiver name (allow this/self)
-                            fieldalignment = false,
+                            fieldalignment = true,
                             nilness = true,
                         },
                     },
