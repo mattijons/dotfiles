@@ -127,6 +127,15 @@ vim.keymap.set('n', ']b', ':bnext<CR>')
 vim.keymap.set('n', '[b', ':bprevious<CR>')
 
 -------------------------------------------------------------------------------
+-- User commands
+-------------------------------------------------------------------------------
+
+-- Diffs current local branch against origin/development
+vim.api.nvim_create_user_command('Diffdevelopment',
+    'DiffviewOpen origin/development... --imply-local', {}
+)
+
+-------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
 local augroup = vim.api.nvim_create_augroup
@@ -219,6 +228,9 @@ require('lazy').setup {
                 end
             })
         end
+    },
+    { 'sindrets/diffview.nvim',
+        dependencies = 'nvim-lua/plenary.nvim'
     },
     { 'ThePrimeagen/harpoon',
         dependencies = { 'nvim-lua/plenary.nvim' },
