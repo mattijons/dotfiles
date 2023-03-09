@@ -118,6 +118,14 @@ vim.keymap.set('n', '<Leader>w', ':w<CR>')
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
+-- Tab navigation
+vim.keymap.set('n', ']t', ':tabnext<CR>')
+vim.keymap.set('n', '[t', ':tabprevious<CR>')
+
+-- Buffer navigation
+vim.keymap.set('n', ']b', ':bnext<CR>')
+vim.keymap.set('n', '[b', ':bprevious<CR>')
+
 -------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
