@@ -57,6 +57,8 @@ vim.g['makery_config'] = {
 -------------------------------------------------------------------------------
 -- Keymap
 -------------------------------------------------------------------------------
+local silent = { silent = true }
+
 -- Tab/Shift+tab to indent/dedent
 vim.g.mapleader = ' '
 
@@ -71,6 +73,13 @@ vim.keymap.set('n', 'k', 'gk')
 
 vim.keymap.set('n', 'Q', '<Nop>')
 
+-- Toggle nvim-tree
+vim.keymap.set('n', '<F1>', '<Nop>')
+vim.keymap.set('n', '<F1>', ':NvimTreeToggle<CR>')
+
+-- Toggle nvim-tree
+vim.keymap.set('n', '<F3>', ':SymbolsOutline<CR>')
+
 -- Toggle diagnostics lines
 vim.keymap.set('n', '<Leader>l', ':lua require("lsp_lines").toggle()<CR>')
 
@@ -83,8 +92,8 @@ vim.keymap.set('n', '<S-q>',
     ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>"
 )
 
-vim.keymap.set('n', '<Leader>a', ":lua require('harpoon.mark').add_file()<CR>")
-vim.keymap.set('n', '<C-m>', ":Telescope harpoon marks<CR>")
+vim.keymap.set('n', '<Leader>a', ":lua require('harpoon.mark').add_file()<CR>", silent)
+vim.keymap.set('n', '<C-m>', ":Telescope harpoon marks<CR>", silent)
 
 vim.keymap.set('n', '<C-b>', ':Telescope buffers<CR>')
 vim.keymap.set('n', '<C-s>', ':Telescope oldfiles<CR>')
@@ -114,17 +123,20 @@ vim.keymap.set('n', '<Leader>/', ':nohlsearch<CR>')
 -- Quick save (write)
 vim.keymap.set('n', '<Leader>w', ':w<CR>')
 
+-- Toggle true/false on/off yes/no left/right up/down !=/==
+vim.keymap.set('n', '<Leader>c', ":lua require('nvim-toggler').toggle()<CR>")
+
 -- Don't lose focus when visual tabbing
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
 -- Tab navigation
-vim.keymap.set('n', ']t', ':tabnext<CR>')
-vim.keymap.set('n', '[t', ':tabprevious<CR>')
+vim.keymap.set('n', ']t', ':tabnext<CR>', silent)
+vim.keymap.set('n', '[t', ':tabprevious<CR>', silent)
 
 -- Buffer navigation
-vim.keymap.set('n', ']b', ':bnext<CR>')
-vim.keymap.set('n', '[b', ':bprevious<CR>')
+vim.keymap.set('n', ']b', ':BufferLineCycleNext<CR>', silent)
+vim.keymap.set('n', '[b', ':BufferLineCyclePrev<CR>', silent)
 
 -------------------------------------------------------------------------------
 -- User commands
@@ -139,51 +151,62 @@ vim.api.nvim_create_user_command('Diffdevelopment',
 -- Autocommands
 -------------------------------------------------------------------------------
 local augroup = vim.api.nvim_create_augroup
-local autocmd = vim.api.nvim_create_autocmd
+
+vim.api.nvim_create_autocmd({ "VimEnter" }, {
+    callback = function(data)
+        -- buffer is a directory
+        local directory = vim.fn.isdirectory(data.file) == 1
+
+        if not directory then
+            return
+        end
+        -- change to the directory
+        vim.cmd.cd(data.file)
+        -- open the tree
+        require("nvim-tree.api").tree.open()
+    end
+})
 
 -- Highlight yanked text
-local yankGroup = augroup('YankHighlight', { clear = true })
-autocmd('TextYankPost', {
-    group = yankGroup,
+vim.api.nvim_create_autocmd('TextYankPost', {
+    group = vim.api.nvim_create_augroup('YankHighlight', { clear = true }),
     callback = function()
         vim.highlight.on_yank({ higroup = 'IncSearch', timeout = '250' })
     end
 })
 
 -- Format go files on save (gofmt + goimports)
-local formatAutogroup = augroup('FormatAutogroup', { clear = true })
-autocmd('BufWritePost', {
-    group = formatAutogroup,
+vim.api.nvim_create_autocmd('BufWritePost', {
+    group = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true }),
     pattern = {'*.go', '*.ts'},
     command = 'FormatWrite'
 })
 
 -- Show cursorline only in active window
 local cursorlineActiveWindow = augroup('CursorlineActiveWindow', { clear = true })
-autocmd({ 'VimEnter', 'WinEnter', 'BufWinEnter' }, {
+vim.api.nvim_create_autocmd({ 'VimEnter', 'WinEnter', 'BufWinEnter' }, {
     group = cursorlineActiveWindow,
     command = 'setlocal cursorline'
 })
-autocmd({ 'WinLeave' }, {
+vim.api.nvim_create_autocmd({ 'WinLeave' }, {
     group = cursorlineActiveWindow,
     command = 'setlocal nocursorline'
 })
 
 -- Quickscope colors
 local quickscopeColors = augroup('QuickscopeColors', { clear = true })
-autocmd({ 'ColorScheme' }, {
+vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
     group = quickscopeColors,
     command = "highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline",
 })
-autocmd({ 'ColorScheme' }, {
+vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
     group = quickscopeColors,
     command = "highlight QuickScopeSecondary guifg='#FF00FF' gui=underline ctermfg=201 cterm=underline",
 })
 
 -- Turn off expandtab in go files
-local noExpandtab = augroup('NoExpandtab', { clear = true })
-autocmd({ 'FileType' }, {
-    group = noExpandtab,
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+    group = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true }),
     pattern = { 'go' },
     command = 'set expandtab!'
 })
@@ -219,6 +242,25 @@ require('lazy').setup {
     { 'ojroques/nvim-hardline', config = true },
     { 'numToStr/Comment.nvim', config = true },
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
+    { 'nvim-tree/nvim-web-devicons',
+        config = function()
+            require('nvim-web-devicons').setup()
+        end
+    },
+    { 'nguyenvukhang/nvim-toggler',
+        config = function()
+            require('nvim-toggler').setup({
+                remove_default_keybinds = true,
+            })
+        end
+    },
+    { 'simrat39/symbols-outline.nvim',
+        config = function()
+            require("symbols-outline").setup({
+                autofold_depth = 0
+            })
+        end
+    },
     { 'kevinhwang91/nvim-ufo',
         dependencies = 'kevinhwang91/promise-async',
         config = function()
@@ -226,6 +268,53 @@ require('lazy').setup {
                 provider_selector = function(bufnr, filetype, buftype)
                     return { 'treesitter', 'indent' }
                 end
+            })
+        end
+    },
+    {'akinsho/bufferline.nvim',
+        tag = "v3.*",
+        dependencies = 'nvim-tree/nvim-web-devicons',
+        config = function()
+            local harpoon = require("harpoon")
+            require("bufferline").setup({
+                highlights = {
+                    buffer_selected = { italic = false },
+                    diagnostic_selected = { italic = false },
+                    hint_selected = { italic = false },
+                    pick_selected = { italic = false },
+                    pick_visible = { italic = false },
+                    pick = { italic = false },
+                    fill = {
+                        fg = '#434343',
+                        bg = '#282828',
+                    },
+                },
+                options = {
+                    separator = true,
+                    separator_style = "thin",
+
+                    always_show_bufferline = false,
+                    -- Only show harpoon marked files and visible buffers
+                    custom_filter = function(buf_number, _buf_numbers)
+                        -- List buffer if visible in a window
+                        if vim.fn.bufwinnr(buf_number) ~= -1 then
+                            return true
+                        end
+
+                        -- List buffer if harpoon marked
+                        -- TODO: use buffer id(s) instead of file names.
+                        local Marked = require("harpoon.mark")
+                        local cwd = vim.fn.getcwd()
+                        for idx = 1, Marked.get_length() do
+                            local file = Marked.get_marked_file_name(idx)
+                            if cwd .. '/' .. file == vim.api.nvim_buf_get_name(buf_number) then
+                                return true
+                            end
+                        end
+
+                        return false
+                    end
+                },
             })
         end
     },
@@ -319,9 +408,7 @@ require('lazy').setup {
         },
         tag = 'nightly',
         config = function()
-            require('nvim-tree').setup({
-                open_on_setup = true
-            })
+            require('nvim-tree').setup()
         end
     },
     {
@@ -421,14 +508,6 @@ require('lazy').setup {
             local lsp = require('lsp-zero')
             lsp.preset('recommended')
             lsp.nvim_workspace()
-            lsp.on_attach(
-            -- TODO: Learn how to disable specific formatting
-            -- function(client, bufnr)
-            --     require('lsp-format').on_attach(client, bufnr)
-            -- end
-            )
-
-            lsp.ensure_installed({'eslint'})
 
             lsp.configure('pylsp', {
                 settings = {
