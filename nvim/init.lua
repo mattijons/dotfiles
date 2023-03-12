@@ -67,6 +67,12 @@ vim.keymap.set('i', '<C-l>', '<C-o>$')
 -- Center screen in insert mode
 vim.keymap.set('i', '<C-z>', '<C-o>zz')
 
+-- -- Resize windows
+vim.keymap.set('n', '<A-h>', ":lua require('smart-splits').resize_left()<CR>")
+vim.keymap.set('n', '<A-l>', ":lua require('smart-splits').resize_right()<CR>")
+vim.keymap.set('n', '<A-k>', ":lua require('smart-splits').resize_up()<CR>")
+vim.keymap.set('n', '<A-j>', ":lua require('smart-splits').resize_down()<CR>")
+--
 -- Move up and down visually
 vim.keymap.set('n', 'j', 'gj')
 vim.keymap.set('n', 'k', 'gk')
@@ -316,6 +322,11 @@ require('lazy').setup {
                     end
                 },
             })
+        end
+    },
+    { 'mrjones2014/smart-splits.nvim',
+        config = function()
+            require('smart-splits').setup()
         end
     },
     { 'sindrets/diffview.nvim',
