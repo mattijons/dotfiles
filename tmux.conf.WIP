@@ -1,0 +1,130 @@
+# Remap prefix from 'C-b' to '`'
+unbind C-b
+set-option -g prefix `
+bind-key ` send-prefix
+
+set -g base-index 1           # start windows numbering at 1
+setw -g pane-base-index 1     # make pane numbering consistent with windows
+
+setw -g automatic-rename on   # rename window to reflect current program
+set -g renumber-windows on    # renumber windows when a window is closed
+
+set -g mouse on               # enable mouse
+
+# -- vim-tmux navigation  ------------------------------------------------------
+# Smart pane switching with awareness of Vim splits.
+# See: https://github.com/christoomey/vim-tmux-navigator
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
+    bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
+    bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
+    bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
+    bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
+
+    bind-key -n M-h if-shell "$is_vim" 'send-keys M-h' 'resize-pane -L 3'
+    bind-key -n M-j if-shell "$is_vim" 'send-keys M-j' 'resize-pane -D 3'
+    bind-key -n M-k if-shell "$is_vim" 'send-keys M-k' 'resize-pane -U 3'
+    bind-key -n M-l if-shell "$is_vim" 'send-keys M-l' 'resize-pane -R 3'
+
+    tmux_version='$(tmux -V | sed -En "s/^tmux ([0-9]+(.[0-9]+)?).*/\1/p")'
+    if-shell -b '[ "$(echo "$tmux_version < 3.0" | bc)" = 1 ]' \
+        "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\'  'select-pane -l'"
+        if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
+            "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\\\'  'select-pane -l'"
+            bind-key -T copy-mode-vi 'C-h' select-pane -L
+            bind-key -T copy-mode-vi 'C-j' select-pane -D
+            bind-key -T copy-mode-vi 'C-k' select-pane -U
+            bind-key -T copy-mode-vi 'C-l' select-pane -R
+            bind-key -T copy-mode-vi 'C-\' select-pane -l
+
+
+# split current window horizontally
+unbind %
+bind s split-window -v
+# split current window vertically
+unbind '"'
+bind v split-window -h
+
+bind > swap-pane -D       # swap current pane with the next one
+bind < swap-pane -U       # swap current pane with the previous one
+
+# create session
+bind -r a new-session
+
+# session navigation
+bind -r k switch-client -p
+bind -r j switch-client -n
+
+# window navigation
+unbind n
+unbind p
+bind -r h previous-window # select previous window
+bind -r l next-window     # select next window
+
+##############################
+### Color & Style Settings ###
+##############################
+
+set -g status-left-length 32
+set -g status-right-length 150
+set -g status-interval 5
+
+tmux_bg='#202328'
+tmux_fg='#bbc2cf'
+tmux_aqua='#3affdb'
+tmux_beige='#f5c06f'
+tmux_blue='#51afef'
+tmux_brown='#905532'
+tmux_cyan='#008080'
+tmux_darkblue='#081633'
+tmux_darkorange='#f16529'
+tmux_green='#98be65'
+tmux_grey="#8c979a"
+tmux_lightblue='#5fd7ff'
+tmux_lightgreen='#31b53e'
+tmux_magenta='#c678dd'
+tmux_orange='#d4843e'
+tmux_pink='#cb6f6f'
+tmux_purple='#834f79'
+tmux_red='#ae403f'
+tmux_salmon='#ee6e73'
+tmux_violet='#a9a1e1'
+tmux_white='#eff0f1'
+tmux_yellow='#f09f17'
+
+# default statusbar colors
+set-option -g status-style fg=$tmux_fg,bg=$tmux_bg
+
+set-window-option -g window-status-style fg=$tmux_grey
+set-window-option -g window-status-format " #I #{?#W,#W,#{b:pane_current_path}}"
+
+# active window title colors
+set-window-option -g window-status-current-style fg=$tmux_blue,bg=$tmux_bg
+set-window-option -g window-status-current-format " #I #[bold]#{?#{#W,#W,b:pane_current_path}} "
+
+set-window-option -g status-left-style fg=$tmux_bg,bg=$tmux_blue
+set-window-option -g status-right-style bg=$tmux_blue
+
+set-window-option -g status-position top
+
+# pane border colors
+set-window-option -g pane-active-border-style fg=$tmux_blue
+set-window-option -g pane-border-style fg=$tmux_grey
+
+# message text
+set-option -g message-style bg=$tmux_bg,fg=$tmux_magenta
+
+# pane number display
+set-option -g display-panes-active-colour $tmux_magenta
+set-option -g display-panes-colour $tmux_blue
+
+# clock
+set-window-option -g clock-mode-colour $tmux_magenta
+
+tm_session_name="#[bold]  #S #[fg=$tmux_bg]"
+set -g status-left "$tm_session_name"
+
+# tm_tunes="#[bold,bg=$tmux_blue,fg=$tmux_bg]  #(osascript -l JavaScript $DOTFILES/applescripts/tunes.js)"
+# tm_battery="#[fg=$base0F,bg=$tmux_bg] ♥ #(battery)"
+tm_host="#[fg=$tmux_blue,bg=$tmux_darkblue]#[bold,bg=$tmux_darkblue,fg=$tmux_blue] #h "
+set -g status-right "#[fg=$tmux_bg]$tm_tunes $tm_host"
