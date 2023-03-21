@@ -164,8 +164,6 @@ vim.api.nvim_create_user_command('Diffdevelopment',
 -------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
-local augroup = vim.api.nvim_create_augroup
-
 vim.api.nvim_create_autocmd({ "VimEnter" }, {
     callback = function(data)
         -- buffer is a directory
@@ -190,14 +188,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- Format go files on save (gofmt + goimports)
+local formatAutogroup = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePost', {
-    group = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true }),
+    group = formatAutogroup,
     pattern = {'*.go', '*.ts'},
     command = 'FormatWrite'
 })
 
 -- Show cursorline only in active window
-local cursorlineActiveWindow = augroup('CursorlineActiveWindow', { clear = true })
+local cursorlineActiveWindow = vim.api.nvim_create_augroup('CursorlineActiveWindow', { clear = true })
 vim.api.nvim_create_autocmd({ 'VimEnter', 'WinEnter', 'BufWinEnter' }, {
     group = cursorlineActiveWindow,
     command = 'setlocal cursorline'
@@ -208,19 +207,20 @@ vim.api.nvim_create_autocmd({ 'WinLeave' }, {
 })
 
 -- Quickscope colors
-local quickscopeColors = augroup('QuickscopeColors', { clear = true })
+local quickscopeColors = vim.api.nvim_create_augroup('QuickscopeColors', { clear = true })
 vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
     group = quickscopeColors,
-    command = "highlight QuickScopePrimary guifg='#afff5f' gui=underline ctermfg=155 cterm=underline",
+    command = "highlight QuickScopePrimary guifg='#afff5f' gui=none ctermfg=155 cterm=underline",
 })
 vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
     group = quickscopeColors,
-    command = "highlight QuickScopeSecondary guifg='#FF00FF' gui=underline ctermfg=201 cterm=underline",
+    command = "highlight QuickScopeSecondary guifg='#FF00FF' gui=none ctermfg=201 cterm=underline",
 })
 
 -- Turn off expandtab in go files
+local noExpandtab = vim.api.nvim_create_augroup('NoExpandtab', { clear = true })
 vim.api.nvim_create_autocmd({ 'FileType' }, {
-    group = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true }),
+    group = noExpandtab,
     pattern = { 'go' },
     command = 'set expandtab!'
 })
