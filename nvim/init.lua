@@ -476,6 +476,8 @@ require('lazy').setup {
 
             require('telescope').load_extension('harpoon')
 
+            require('telescope').load_extension('fzf')
+
             telescope.setup {
                 defaults = {
                     layout_config = {
