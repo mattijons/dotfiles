@@ -240,7 +240,6 @@ vim.opt.rtp:prepend(lazypath)
 -------------------------------------------------------------------------------
 require('lazy').setup {
     { 'wellle/targets.vim' },
-    { 'tpope/vim-surround' },
     { 'tpope/vim-repeat' },
     { 'raimondi/delimitmate' },
     { 'christoomey/vim-tmux-navigator' },
@@ -254,6 +253,13 @@ require('lazy').setup {
     { 'ethanholz/nvim-lastplace', config = true },
     { 'numToStr/Comment.nvim', config = true },
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
+    { "kylechui/nvim-surround",
+        version = "*",
+        event = "VeryLazy",
+        config = function()
+            require("nvim-surround").setup()
+        end
+    },
     { 'miversen33/netman.nvim',
         config = function()
             require('netman')
