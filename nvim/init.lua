@@ -244,7 +244,6 @@ require('lazy').setup {
     { 'tpope/vim-repeat' },
     { 'raimondi/delimitmate' },
     { 'christoomey/vim-tmux-navigator' },
-    { 'miversen33/netman.nvim' },
     { 'jacoborus/tender.vim' },
     { 'unblevable/quick-scope' },
     { 'igemnace/vim-makery' },
@@ -256,6 +255,11 @@ require('lazy').setup {
     { 'ojroques/nvim-hardline', config = true },
     { 'numToStr/Comment.nvim', config = true },
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
+    { 'miversen33/netman.nvim',
+        config = function()
+            require('netman')
+        end
+    },
     { 'nvim-tree/nvim-web-devicons',
         config = function()
             require('nvim-web-devicons').setup()
