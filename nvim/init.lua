@@ -275,6 +275,18 @@ require('lazy').setup {
             require('nvim-web-devicons').setup()
         end
     },
+    { 'nvim-lualine/lualine.nvim',
+        dependencies = 'nvim-tree/nvim-web-devicons',
+        config = function()
+            require('lualine').setup({
+                options = {
+                    theme = 'ayu',
+                    section_separators = '',
+                    component_separators = ''
+                },
+            })
+        end
+    },
     { 'nguyenvukhang/nvim-toggler',
         config = function()
             require('nvim-toggler').setup({
