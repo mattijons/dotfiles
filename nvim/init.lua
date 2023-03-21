@@ -312,6 +312,7 @@ require('lazy').setup {
         end
     },
     {'akinsho/bufferline.nvim',
+        enabled = false, -- not quite there
         tag = "v3.*",
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
