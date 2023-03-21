@@ -260,6 +260,16 @@ require('lazy').setup {
             require('netman')
         end
     },
+    { 'Shatur/neovim-ayu',
+        config = function()
+            require('ayu').setup({
+                -- Turn off italic comments
+                overrides = function()
+                    return { Comment = { fg = require('ayu.colors').comment } }
+                end
+            })
+        end
+    },
     { 'nvim-tree/nvim-web-devicons',
         config = function()
             require('nvim-web-devicons').setup()
@@ -618,7 +628,13 @@ require('lazy').setup {
     },
 }
 
--- TODO: FIX!
-require('netman')
-require('telescope').load_extension('fzf')
-vim.cmd.colorscheme('tender')
+-----------------------------------------------------
+-- Colorscheme-ing
+-----------------------------------------------------
+vim.cmd.colorscheme('ayu')
+-- Use with vim.laststatus = 3 and ayu colorscheme
+vim.api.nvim_set_hl(0, 'CursorLine', { fg = 'none', bg = 'gray12', default = false })
+vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#242A35', bg = 'None', default = true })
+
+-- Use with vim.laststatus = 3 and tender colorscheme
+-- vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#666666', bg = 'None', default = true })
