@@ -537,38 +537,43 @@ require('lazy').setup {
         end
     },
     { 'VonHeikemen/lsp-zero.nvim',
+        branch = 'v1.x',
         dependencies = {
-            'neovim/nvim-lspconfig',
-            'williamboman/mason.nvim',
-            'williamboman/mason-lspconfig.nvim',
-            'hrsh7th/nvim-cmp',
-            'hrsh7th/cmp-buffer',
-            'hrsh7th/cmp-path',
-            'hrsh7th/cmp-nvim-lsp',
-            'hrsh7th/cmp-nvim-lua',
-            'saadparwaiz1/cmp_luasnip',
-            'L3MON4D3/LuaSnip',
-            'rafamadriz/friendly-snippets',
-            { 'lukas-reineke/lsp-format.nvim', config = true },
+            -- LSP Support
+            {'neovim/nvim-lspconfig'},
+            {'williamboman/mason.nvim'},
+            {'williamboman/mason-lspconfig.nvim'},
+
+            -- Autocompletion
+            {'hrsh7th/nvim-cmp'},
+            {'hrsh7th/cmp-nvim-lsp'},
+            {'hrsh7th/cmp-buffer'},
+            {'hrsh7th/cmp-path'},
+            {'saadparwaiz1/cmp_luasnip'},
+            {'hrsh7th/cmp-nvim-lua'},
+
+            -- Snippets
+            {'L3MON4D3/LuaSnip'},
+            {'rafamadriz/friendly-snippets'},
         },
         config = function()
-            local lsp = require('lsp-zero')
-            lsp.preset('recommended')
-            lsp.nvim_workspace()
-
-            lsp.configure('pylsp', {
-                settings = {
-                    pylsp = {
-                        plugins = {
-                            pycodestyle = {
-                                enabled = true,
-                                ignore = { 'E501' }, -- Line Too long
-                            }
-                        }
-                    }
-                }
+            local lsp = require('lsp-zero').preset({
+                name = 'recommended',
+                set_lsp_keymaps = true,
+                manage_nvim_cmp = true,
+                suggest_lsp_servers = true,
             })
 
+            -- Lua language server
+            lsp.nvim_workspace()
+
+
+            -- Rust language server
+            lsp.configure('rust-analyzer', {
+                procMacro = { enable = true },
+            })
+
+            -- Go language server
             lsp.configure('gopls', {
                 settings = {
                     gopls = {
@@ -593,11 +598,26 @@ require('lazy').setup {
                 }
             })
 
-            lsp.setup()
+            -- Python language server
+            lsp.configure('pylsp', {
+                settings = {
+                    pylsp = {
+                        plugins = {
+                            pycodestyle = {
+                                enabled = true,
+                                ignore = { 'E501' }, -- Line Too long
+                            }
+                        }
+                    }
+                }
+            })
+
             vim.diagnostic.config {
                 virtual_text = false,
                 underline = false
             }
+
+            lsp.setup()
 
         end
     },
