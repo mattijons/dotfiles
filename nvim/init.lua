@@ -97,13 +97,16 @@ vim.keymap.set('n', '<C-p>',
     ":lua if not pcall(require('telescope.builtin').git_files, {}) then require('telescope.builtin').find_files({}) end <CR>"
 )
 
+-- Live grep (using ripgrep)
 vim.keymap.set('n', '<S-q>',
     ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>"
 )
 
+-- Harpoon
 vim.keymap.set('n', '<Leader>a', ":lua require('harpoon.mark').add_file()<CR>", silent)
 vim.keymap.set('n', '<C-m>', ":Telescope harpoon marks<CR>", silent)
 
+-- Buffers and Oldfiles
 vim.keymap.set('n', '<C-b>', ':Telescope buffers<CR>')
 vim.keymap.set('n', '<C-s>', ':Telescope oldfiles<CR>')
 
@@ -125,8 +128,10 @@ vim.keymap.set('n', 'c#', "?\\<<C-R>=expand('<cword>')<CR>\\>\\C<CR>``cgN")
 vim.keymap.set('n', 'n', 'nzz')
 vim.keymap.set('n', 'N', 'Nzz')
 
+-- Toggle a fold
 vim.keymap.set('n', '<Leader>f', 'za')
 
+-- Turn off search highlights
 vim.keymap.set('n', '<Leader>/', ':nohlsearch<CR>')
 
 -- Quick save (write)
