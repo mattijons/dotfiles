@@ -252,7 +252,6 @@ require('lazy').setup {
     { 'tpope/vim-fugitive' },
     { 'savq/melange' },
     { 'ethanholz/nvim-lastplace', config = true },
-    { 'ojroques/nvim-hardline', config = true },
     { 'numToStr/Comment.nvim', config = true },
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
     { 'miversen33/netman.nvim',
