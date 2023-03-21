@@ -660,6 +660,21 @@ require('lazy').setup {
             }
         end
     },
+    { 'nvim-treesitter/nvim-treesitter-context',
+        -- TODO: custom color highlights
+        config = function()
+            require('treesitter-context').setup({
+                enable = true,
+                patterns = {
+                    default = {
+                        'class',
+                        'function',
+                        'method',
+                    },
+                }
+            })
+        end
+    },
 }
 
 -----------------------------------------------------
