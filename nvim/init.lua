@@ -148,9 +148,9 @@ vim.keymap.set('v', '>', '>gv')
 vim.keymap.set('n', ']t', ':tabnext<CR>', silent)
 vim.keymap.set('n', '[t', ':tabprevious<CR>', silent)
 
--- Buffer navigation
-vim.keymap.set('n', ']b', ':BufferLineCycleNext<CR>', silent)
-vim.keymap.set('n', '[b', ':BufferLineCyclePrev<CR>', silent)
+-- Harpoon buffer navigation
+vim.keymap.set('n', ']b', ':lua require("harpoon.ui").nav_next()<CR>', silent)
+vim.keymap.set('n', '[b', ':lua require("harpoon.ui").nav_prev()<CR>', silent)
 
 -------------------------------------------------------------------------------
 -- User commands
