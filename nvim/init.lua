@@ -187,11 +187,11 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end
 })
 
--- Format go files on save (gofmt + goimports)
+-- Format files on save
 local formatAutogroup = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePost', {
     group = formatAutogroup,
-    pattern = {'*.go', '*.ts'},
+    pattern = {'*.go', '*.ts', '*.rs'},
     command = 'FormatWrite'
 })
 
@@ -537,7 +537,10 @@ require('lazy').setup {
                     },
                     typescript = {
                         require('formatter.filetypes.typescript').eslint_d,
-                    }
+                    },
+                    rust = {
+                        require('formatter.filetypes.rust').rustfmt,
+                    },
                 }
             })
         end
