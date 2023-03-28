@@ -86,7 +86,7 @@ vim.keymap.set('n', 'Q', '<Nop>')
 vim.keymap.set('n', '<F1>', '<Nop>')
 vim.keymap.set('n', '<F1>', ':NvimTreeToggle<CR>')
 
--- Toggle nvim-tree
+-- Toggle symbol outline
 vim.keymap.set('n', '<F3>', ':SymbolsOutline<CR>')
 
 -- Toggle diagnostics lines
@@ -249,7 +249,6 @@ require('lazy').setup {
     { 'nvim-treesitter/nvim-treesitter-textobjects' },
     { 'folke/lsp-colors.nvim' },
     { 'tpope/vim-fugitive' },
-    { 'savq/melange' },
     { 'ethanholz/nvim-lastplace', config = true },
     { 'numToStr/Comment.nvim', config = true },
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
@@ -303,64 +302,6 @@ require('lazy').setup {
         config = function()
             require("symbols-outline").setup({
                 autofold_depth = 0
-            })
-        end
-    },
-    { 'kevinhwang91/nvim-ufo',
-        dependencies = 'kevinhwang91/promise-async',
-        config = function()
-            require('ufo').setup({
-                provider_selector = function(bufnr, filetype, buftype)
-                    return { 'treesitter', 'indent' }
-                end
-            })
-        end
-    },
-    {'akinsho/bufferline.nvim',
-        enabled = false, -- not quite there
-        tag = "v3.*",
-        dependencies = 'nvim-tree/nvim-web-devicons',
-        config = function()
-            local harpoon = require("harpoon")
-            require("bufferline").setup({
-                highlights = {
-                    buffer_selected = { italic = false },
-                    diagnostic_selected = { italic = false },
-                    hint_selected = { italic = false },
-                    pick_selected = { italic = false },
-                    pick_visible = { italic = false },
-                    pick = { italic = false },
-                    fill = {
-                        fg = '#434343',
-                        bg = '#282828',
-                    },
-                },
-                options = {
-                    separator = true,
-                    separator_style = "thin",
-
-                    always_show_bufferline = false,
-                    -- Only show harpoon marked files and visible buffers
-                    custom_filter = function(buf_number, _buf_numbers)
-                        -- List buffer if visible in a window
-                        if vim.fn.bufwinnr(buf_number) ~= -1 then
-                            return true
-                        end
-
-                        -- List buffer if harpoon marked
-                        -- TODO: use buffer id(s) instead of file names.
-                        local Marked = require("harpoon.mark")
-                        local cwd = vim.fn.getcwd()
-                        for idx = 1, Marked.get_length() do
-                            local file = Marked.get_marked_file_name(idx)
-                            if cwd .. '/' .. file == vim.api.nvim_buf_get_name(buf_number) then
-                                return true
-                            end
-                        end
-
-                        return false
-                    end
-                },
             })
         end
     },
