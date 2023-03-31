@@ -559,6 +559,15 @@ require('lazy').setup {
                 }
             })
 
+            -- YAML language server
+            lsp.configure('yamlls', {
+                settings = {
+                    yaml = {
+                        keyorder = false
+                    }
+                }
+            })
+
             vim.diagnostic.config {
                 virtual_text = false,
                 underline = false
