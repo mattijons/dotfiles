@@ -54,6 +54,11 @@ vim.g['makery_config'] = {
         make = {
             makeprg = 'docker exec --workdir /nanitor nanitor_dev_env make'
         }
+    },
+    ['~/dev/nancust'] = {
+        make = {
+            makeprg = 'docker exec --workdir /nancust nancust_dev_env make'
+        }
     }
 }
 
@@ -151,6 +156,17 @@ vim.keymap.set('n', '[t', ':tabprevious<CR>', silent)
 -- Harpoon buffer navigation
 vim.keymap.set('n', ']b', ':lua require("harpoon.ui").nav_next()<CR>', silent)
 vim.keymap.set('n', '[b', ':lua require("harpoon.ui").nav_prev()<CR>', silent)
+
+
+-- Git status (fugitive)
+local function toggleFugitiveGit()
+  if vim.fn.buflisted(vim.fn.bufname('fugitive:///*/.git//$')) ~= 0 then
+    vim.cmd[[ execute ":bdelete" bufname('fugitive:///*/.git//$') ]]
+  else
+    vim.cmd[[ Git ]]
+  end
+end
+vim.keymap.set('n', '<Leader>gs', toggleFugitiveGit, silent)
 
 -------------------------------------------------------------------------------
 -- User commands
@@ -634,12 +650,11 @@ require('lazy').setup {
 }
 
 -----------------------------------------------------
--- Colorscheme-ing
+-- Colorschemes
 -----------------------------------------------------
+
+-- Ayu
 vim.cmd.colorscheme('ayu')
--- Use with vim.laststatus = 3 and ayu colorscheme
 vim.api.nvim_set_hl(0, 'CursorLine', { fg = 'none', bg = 'gray12', default = false })
 vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#242A35', bg = 'None', default = true })
-
--- Use with vim.laststatus = 3 and tender colorscheme
--- vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#666666', bg = 'None', default = true })
+vim.api.nvim_set_hl(0, 'TreesitterContext', { fg = 'none', bg = '#161a20', default = true })
