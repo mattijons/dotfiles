@@ -268,7 +268,12 @@ require('lazy').setup {
     { 'ethanholz/nvim-lastplace', config = true },
     { 'numToStr/Comment.nvim', config = true },
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
-    { "kylechui/nvim-surround",
+    {
+        "windwp/nvim-autopairs",
+        config = function()
+            require("nvim-autopairs").setup {}
+        end
+    },
         version = "*",
         event = "VeryLazy",
         config = function()
