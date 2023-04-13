@@ -267,25 +267,29 @@ require('lazy').setup {
     { 'tpope/vim-fugitive' },
     { 'ethanholz/nvim-lastplace', config = true },
     { 'numToStr/Comment.nvim', config = true },
-    {'kevinhwang91/nvim-bqf', ft = 'qf'},
+    { 'kevinhwang91/nvim-bqf', ft = 'qf' },
     {
         "windwp/nvim-autopairs",
         config = function()
             require("nvim-autopairs").setup {}
         end
     },
+    {
+        "kylechui/nvim-surround",
         version = "*",
         event = "VeryLazy",
         config = function()
             require("nvim-surround").setup()
         end
     },
-    { 'miversen33/netman.nvim',
+    {
+        'miversen33/netman.nvim',
         config = function()
             require('netman')
         end
     },
-    { 'Shatur/neovim-ayu',
+    {
+        'Shatur/neovim-ayu',
         config = function()
             require('ayu').setup({
                 -- Turn off italic comments
@@ -295,12 +299,14 @@ require('lazy').setup {
             })
         end
     },
-    { 'nvim-tree/nvim-web-devicons',
+    {
+        'nvim-tree/nvim-web-devicons',
         config = function()
             require('nvim-web-devicons').setup()
         end
     },
-    { 'nvim-lualine/lualine.nvim',
+    {
+        'nvim-lualine/lualine.nvim',
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
             require('lualine').setup({
@@ -312,29 +318,34 @@ require('lazy').setup {
             })
         end
     },
-    { 'nguyenvukhang/nvim-toggler',
+    {
+        'nguyenvukhang/nvim-toggler',
         config = function()
             require('nvim-toggler').setup({
                 remove_default_keybinds = true,
             })
         end
     },
-    { 'simrat39/symbols-outline.nvim',
+    {
+        'simrat39/symbols-outline.nvim',
         config = function()
             require("symbols-outline").setup({
                 autofold_depth = 0
             })
         end
     },
-    { 'mrjones2014/smart-splits.nvim',
+    {
+        'mrjones2014/smart-splits.nvim',
         config = function()
             require('smart-splits').setup()
         end
     },
-    { 'sindrets/diffview.nvim',
+    {
+        'sindrets/diffview.nvim',
         dependencies = 'nvim-lua/plenary.nvim'
     },
-    { 'ThePrimeagen/harpoon',
+    {
+        'ThePrimeagen/harpoon',
         dependencies = { 'nvim-lua/plenary.nvim' },
         config = function()
             require('harpoon').setup({
@@ -344,7 +355,8 @@ require('lazy').setup {
             })
         end
     },
-    { 'lewis6991/gitsigns.nvim',
+    {
+        'lewis6991/gitsigns.nvim',
         config = function()
             require('gitsigns').setup({
                 signs = {
@@ -402,7 +414,8 @@ require('lazy').setup {
             require('alpha').setup(require('alpha.themes.startify').config)
         end
     },
-    { 'ibhagwan/smartyank.nvim',
+    {
+        'ibhagwan/smartyank.nvim',
         config = function()
             require('smartyank').setup({
                 highlight = {
@@ -426,7 +439,8 @@ require('lazy').setup {
         build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && \
                cmake --build build --config Release && cmake --install build --prefix build'
     },
-    { 'nvim-telescope/telescope.nvim',
+    {
+        'nvim-telescope/telescope.nvim',
         branch = '0.1.x',
         dependencies = {
             'nvim-lua/plenary.nvim',
@@ -441,7 +455,7 @@ require('lazy').setup {
 
             require('telescope').load_extension('harpoon')
 
-            require('telescope').load_extension('fzf')
+            telescope.load_extension('fzf')
 
             telescope.setup {
                 defaults = {
@@ -486,7 +500,8 @@ require('lazy').setup {
             }
         end
     },
-    { 'mhartington/formatter.nvim',
+    {
+        'mhartington/formatter.nvim',
         config = function()
             require('formatter').setup({
                 filetype = {
@@ -504,7 +519,8 @@ require('lazy').setup {
             })
         end
     },
-    { 'VonHeikemen/lsp-zero.nvim',
+    {
+        'VonHeikemen/lsp-zero.nvim',
         branch = 'v1.x',
         dependencies = {
             -- LSP Support
@@ -598,12 +614,14 @@ require('lazy').setup {
 
         end
     },
-    { url = 'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
+    {
+        url = 'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
         config = function()
             require('lsp_lines').setup()
         end,
     },
-    { 'nvim-treesitter/nvim-treesitter',
+    {
+        'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         config = function()
             require('nvim-treesitter.configs').setup {
@@ -637,7 +655,8 @@ require('lazy').setup {
             }
         end
     },
-    { 'nvim-treesitter/nvim-treesitter-context',
+    {
+        'nvim-treesitter/nvim-treesitter-context',
         -- TODO: custom color highlights
         config = function()
             require('treesitter-context').setup({
