@@ -235,10 +235,10 @@ vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
 
 -- Turn off expandtab in go files
 local noExpandtab = vim.api.nvim_create_augroup('NoExpandtab', { clear = true })
-vim.api.nvim_create_autocmd({ 'FileType' }, {
+vim.api.nvim_create_autocmd({ 'FileType', 'WinEnter', 'BufWinEnter' }, {
     group = noExpandtab,
-    pattern = { 'go' },
-    command = 'set expandtab!'
+    pattern = { '*.go' },
+    command = 'set noexpandtab'
 })
 
 -------------------------------------------------------------------------------
