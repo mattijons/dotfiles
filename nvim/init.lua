@@ -157,6 +157,13 @@ vim.keymap.set('n', '[t', ':tabprevious<CR>', silent)
 vim.keymap.set('n', ']b', ':lua require("harpoon.ui").nav_next()<CR>', silent)
 vim.keymap.set('n', '[b', ':lua require("harpoon.ui").nav_prev()<CR>', silent)
 
+-- Quickfix list navigation
+vim.keymap.set('n', ']q', "<Plug>(qf_qf_next)<CR>", silent)
+vim.keymap.set('n', '[q', "<Plug>(qf_qf_previous)<CR>", silent)
+
+-- Quickfix list toggle
+vim.keymap.set('n', '<Leader>q', "<Plug>(qf_qf_toggle)<CR>", silent)
+
 
 -- Git status (fugitive)
 local function toggleFugitiveGit()
@@ -265,13 +272,40 @@ require('lazy').setup {
     { 'nvim-treesitter/nvim-treesitter-textobjects' },
     { 'folke/lsp-colors.nvim' },
     { 'tpope/vim-fugitive' },
+    { 'romainl/vim-qf' },
+    { 'kevinhwang91/nvim-bqf' },
     { 'ethanholz/nvim-lastplace', config = true },
     { 'numToStr/Comment.nvim', config = true },
-    { 'kevinhwang91/nvim-bqf', ft = 'qf' },
+    {
+        'nvim-tree/nvim-web-devicons',
+        config = function()
+            require('nvim-web-devicons').setup()
+        end
+    },
+    { 'folke/trouble.nvim',
+        dependencies = 'nvim-tree/nvim-web-devicons',
+        config = function()
+            require("trouble").setup({
+                signs = {
+                    error = "",
+                    warning = "",
+                    hint = "",
+                    information = "",
+                    other = "﫠"
+                },
+            })
+        end
+    },
+    {
+        'yorickpeterse/nvim-pqf',
+        config = function()
+            require("pqf").setup()
+        end
+    },
     {
         "windwp/nvim-autopairs",
         config = function()
-            require("nvim-autopairs").setup {}
+            require("nvim-autopairs").setup{}
         end
     },
     {
@@ -297,12 +331,6 @@ require('lazy').setup {
                     return { Comment = { fg = require('ayu.colors').comment } }
                 end
             })
-        end
-    },
-    {
-        'nvim-tree/nvim-web-devicons',
-        config = function()
-            require('nvim-web-devicons').setup()
         end
     },
     {
