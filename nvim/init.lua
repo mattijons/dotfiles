@@ -26,7 +26,7 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 4
 
-vim.opt.cmdheight = 0
+vim.opt.cmdheight = 1
 vim.opt.numberwidth = 4
 vim.opt.signcolumn = 'yes'
 vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
@@ -63,7 +63,7 @@ vim.g['makery_config'] = {
 }
 
 -------------------------------------------------------------------------------
--- Keymap
+-- Keymaps
 -------------------------------------------------------------------------------
 local silent = { silent = true }
 
@@ -107,6 +107,9 @@ vim.keymap.set('n', '<S-q>',
     ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>"
 )
 
+-- LSP dynamic workspace symbols
+vim.keymap.set('n', '<Leader>s', ':Telescope lsp_dynamic_workspace_symbols<CR>')
+
 -- Harpoon
 vim.keymap.set('n', '<Leader>a', ":lua require('harpoon.mark').add_file()<CR>", silent)
 vim.keymap.set('n', '<C-m>', ":Telescope harpoon marks<CR>", silent)
@@ -142,9 +145,6 @@ vim.keymap.set('n', '<Leader>/', ':nohlsearch<CR>')
 -- Quick save (write)
 vim.keymap.set('n', '<Leader>w', ':w<CR>')
 
--- Toggle true/false on/off yes/no left/right up/down !=/==
-vim.keymap.set('n', '<Leader>c', ":lua require('nvim-toggler').toggle()<CR>")
-
 -- Don't lose focus when visual tabbing
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
@@ -170,7 +170,13 @@ local function toggleFugitiveGit()
   if vim.fn.buflisted(vim.fn.bufname('fugitive:///*/.git//$')) ~= 0 then
     vim.cmd[[ execute ":bdelete" bufname('fugitive:///*/.git//$') ]]
   else
-    vim.cmd[[ Git ]]
+    vim.cmd[[
+        Git
+        wincmd V  " Open Git window in vertical split
+        setlocal winfixwidth
+        horizontal resize 20
+        setlocal winfixwidth
+    ]]
   end
 end
 vim.keymap.set('n', '<Leader>gs', toggleFugitiveGit, silent)
@@ -246,6 +252,30 @@ vim.api.nvim_create_autocmd({ 'FileType', 'WinEnter', 'BufWinEnter' }, {
     group = noExpandtab,
     pattern = { '*.go' },
     command = 'set noexpandtab'
+})
+
+-- Different line number cursor for different modes
+vim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+  callback = function()
+    print(vim.fn.mode())
+    local current_mode = vim.fn.mode()
+    if current_mode == 'n' then
+      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#FFD400' })
+      vim.fn.sign_define('smoothcursor', { text = '' })
+    elseif current_mode == 'v' then
+      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#bf616a' })
+      vim.fn.sign_define('smoothcursor', { text = '' })
+    elseif current_mode == 'V' then
+      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#bf616a' })
+      vim.fn.sign_define('smoothcursor', { text = '' })
+    elseif current_mode == '�' then -- NOT WORKING
+      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#bf616a' })
+      vim.fn.sign_define('smoothcursor', { text = '' })
+    elseif current_mode == 'i' then
+      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#668aab' })
+      vim.fn.sign_define('smoothcursor', { text = '' })
+    end
+  end,
 })
 
 -------------------------------------------------------------------------------
@@ -347,14 +377,6 @@ require('lazy').setup {
         end
     },
     {
-        'nguyenvukhang/nvim-toggler',
-        config = function()
-            require('nvim-toggler').setup({
-                remove_default_keybinds = true,
-            })
-        end
-    },
-    {
         'simrat39/symbols-outline.nvim',
         config = function()
             require("symbols-outline").setup({
@@ -381,6 +403,12 @@ require('lazy').setup {
                     mark_branch = true
                 }
             })
+        end
+    },
+    {
+        'gen740/SmoothCursor.nvim',
+        config = function()
+            require('smoothcursor').setup()
         end
     },
     {
@@ -524,7 +552,7 @@ require('lazy').setup {
                             }
                         }
                     }
-                }
+                },
             }
         end
     },
