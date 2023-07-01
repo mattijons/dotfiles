@@ -291,7 +291,7 @@ vim.opt.rtp:prepend(lazypath)
 -------------------------------------------------------------------------------
 -- Plugins
 -------------------------------------------------------------------------------
-require('lazy').setup {
+require('lazy').setup({
     { 'wellle/targets.vim' },
     { 'tpope/vim-repeat' },
     { 'raimondi/delimitmate' },
@@ -312,7 +312,8 @@ require('lazy').setup {
             require('nvim-web-devicons').setup()
         end
     },
-    { 'folke/trouble.nvim',
+    {
+        'folke/trouble.nvim',
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
             require("trouble").setup({
@@ -347,6 +348,7 @@ require('lazy').setup {
         end
     },
     {
+        lazy = true,
         'miversen33/netman.nvim',
         config = function()
             require('netman')
@@ -496,6 +498,7 @@ require('lazy').setup {
                cmake --build build --config Release && cmake --install build --prefix build'
     },
     {
+        lazy = true,
         'nvim-telescope/telescope.nvim',
         branch = '0.1.x',
         dependencies = {
@@ -727,7 +730,7 @@ require('lazy').setup {
             })
         end
     },
-}
+})
 
 -----------------------------------------------------
 -- Colorschemes
