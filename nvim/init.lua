@@ -161,6 +161,9 @@ vim.keymap.set('n', '[b', ':lua require("harpoon.ui").nav_prev()<CR>', silent)
 vim.keymap.set('n', ']q', "<Plug>(qf_qf_next)<CR>", silent)
 vim.keymap.set('n', '[q', "<Plug>(qf_qf_previous)<CR>", silent)
 
+-- Jump between last file
+vim.keymap.set('n', '<Leader>e', ":e #<CR>", silent)
+
 -- Quickfix list toggle
 vim.keymap.set('n', '<Leader>q', "<Plug>(qf_qf_toggle)<CR>", silent)
 
@@ -296,7 +299,6 @@ require('lazy').setup({
     { 'tpope/vim-repeat' },
     { 'raimondi/delimitmate' },
     { 'christoomey/vim-tmux-navigator' },
-    { 'jacoborus/tender.vim' },
     { 'unblevable/quick-scope' },
     { 'igemnace/vim-makery' },
     { 'nvim-treesitter/nvim-treesitter-textobjects' },
@@ -425,6 +427,15 @@ require('lazy').setup({
                     changedelete = { hl = 'GitSignsChange', text = '~—', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn' },
                 },
 
+                _signs_staged_enable = false, -- experimental
+                _signs_staged = {
+                    add = { text = '│', numhl = 'GitSignsAddNr', linehl = 'GitSignsAddLn' },
+                    change = { text = '│', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn' },
+                    delete = { text = '│', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn' },
+                    topdelete = {  text = '│', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn' },
+                    changedelete = {  text = '│', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn' },
+                },
+
                 on_attach = function(bufnr)
                     local gs = package.loaded.gitsigns
                     local function map(mode, l, r, opts)
@@ -498,7 +509,6 @@ require('lazy').setup({
                cmake --build build --config Release && cmake --install build --prefix build'
     },
     {
-        lazy = true,
         'nvim-telescope/telescope.nvim',
         branch = '0.1.x',
         dependencies = {
@@ -570,6 +580,7 @@ require('lazy').setup({
                     },
                     typescript = {
                         require('formatter.filetypes.typescript').eslint_d,
+                        -- require('formatter.filetypes.typescript').prettierd,
                     },
                     rust = {
                         require('formatter.filetypes.rust').rustfmt,
@@ -580,7 +591,7 @@ require('lazy').setup({
     },
     {
         'VonHeikemen/lsp-zero.nvim',
-        branch = 'v1.x',
+        branch = 'v2.x',
         dependencies = {
             -- LSP Support
             {'neovim/nvim-lspconfig'},
@@ -612,9 +623,7 @@ require('lazy').setup({
 
 
             -- Rust language server
-            lsp.configure('rust-analyzer', {
-                procMacro = { enable = true },
-            })
+            lsp.configure('rust-analyzer', {})
 
             -- Go language server
             lsp.configure('gopls', {
@@ -741,3 +750,10 @@ vim.cmd.colorscheme('ayu')
 vim.api.nvim_set_hl(0, 'CursorLine', { fg = 'none', bg = 'gray12', default = false })
 vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#242A35', bg = 'None', default = true })
 vim.api.nvim_set_hl(0, 'TreesitterContext', { fg = 'none', bg = '#161a20', default = true })
+
+-- Gitsigns staged hunks (experimental)
+vim.api.nvim_set_hl(0, 'GitSignsStagedAdd', { fg = '#ff8f40', bg = 'None', default = true })
+vim.api.nvim_set_hl(0, 'GitSignsStagedChange', { fg = '#ff8f40', bg = 'None', default = false })
+vim.api.nvim_set_hl(0, 'GitSignsStagedDelete', { fg = '#ff8f40', bg = 'None', default = false })
+vim.api.nvim_set_hl(0, 'GitSignsStagedTopDelete', { fg = '#ff8f40', bg = 'None', default = false })
+vim.api.nvim_set_hl(0, 'GitSignsStagedChangedDelete', { fg = '#ff8f40', bg = 'None', default = false })
