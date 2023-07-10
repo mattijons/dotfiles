@@ -158,8 +158,8 @@ vim.keymap.set('n', ']b', ':lua require("harpoon.ui").nav_next()<CR>', silent)
 vim.keymap.set('n', '[b', ':lua require("harpoon.ui").nav_prev()<CR>', silent)
 
 -- Quickfix list navigation
-vim.keymap.set('n', ']q', "<Plug>(qf_qf_next)<CR>", silent)
-vim.keymap.set('n', '[q', "<Plug>(qf_qf_previous)<CR>", silent)
+vim.keymap.set('n', ']q', "<Plug>(qf_qf_next)zz<CR>", silent)
+vim.keymap.set('n', '[q', "<Plug>(qf_qf_previous)zz<CR>", silent)
 
 -- Jump between last file
 vim.keymap.set('n', '<Leader>e', ":e #<CR>", silent)
