@@ -145,6 +145,9 @@ vim.keymap.set('n', '<Leader>/', ':nohlsearch<CR>')
 -- Quick save (write)
 vim.keymap.set('n', '<Leader>w', ':w<CR>')
 
+-- Mmake
+vim.keymap.set('n', '<Leader>m', ':Mmake<CR>')
+
 -- Don't lose focus when visual tabbing
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
@@ -350,7 +353,6 @@ require('lazy').setup({
         end
     },
     {
-        lazy = true,
         'miversen33/netman.nvim',
         config = function()
             require('netman')
