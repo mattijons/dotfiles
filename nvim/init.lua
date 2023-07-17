@@ -40,6 +40,8 @@ vim.opt.foldlevel = 99
 vim.opt.foldlevelstart = 99
 vim.opt.foldenable = true
 
+vim.opt.signcolumn = "auto:2"
+
 vim.opt.list = true
 vim.opt.listchars = {
     tab = '› ',
@@ -260,30 +262,6 @@ vim.api.nvim_create_autocmd({ 'FileType', 'WinEnter', 'BufWinEnter' }, {
     command = 'set noexpandtab'
 })
 
--- Different line number cursor for different modes
-vim.api.nvim_create_autocmd({ 'ModeChanged' }, {
-  callback = function()
-    print(vim.fn.mode())
-    local current_mode = vim.fn.mode()
-    if current_mode == 'n' then
-      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#FFD400' })
-      vim.fn.sign_define('smoothcursor', { text = '' })
-    elseif current_mode == 'v' then
-      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#bf616a' })
-      vim.fn.sign_define('smoothcursor', { text = '' })
-    elseif current_mode == 'V' then
-      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#bf616a' })
-      vim.fn.sign_define('smoothcursor', { text = '' })
-    elseif current_mode == '�' then -- NOT WORKING
-      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#bf616a' })
-      vim.fn.sign_define('smoothcursor', { text = '' })
-    elseif current_mode == 'i' then
-      vim.api.nvim_set_hl(0, 'SmoothCursor', { fg = '#668aab' })
-      vim.fn.sign_define('smoothcursor', { text = '' })
-    end
-  end,
-})
-
 -------------------------------------------------------------------------------
 -- Bootstrap Package Manager
 -------------------------------------------------------------------------------
@@ -409,12 +387,6 @@ require('lazy').setup({
                     mark_branch = true
                 }
             })
-        end
-    },
-    {
-        'gen740/SmoothCursor.nvim',
-        config = function()
-            require('smoothcursor').setup()
         end
     },
     {
@@ -742,6 +714,18 @@ require('lazy').setup({
         end
     },
 })
+
+local signs = {
+    Error = "",
+    Warn = "",
+    Hint = "",
+    Info = ""
+}
+
+for type, icon in pairs(signs) do
+    local hl = "DiagnosticSign" .. type
+    vim.fn.sign_define(hl, {text = icon, texthl = hl, numhl = hl})
+end
 
 -----------------------------------------------------
 -- Colorschemes
