@@ -121,8 +121,8 @@ vim.keymap.set('n', '<C-b>', ':Telescope buffers<CR>')
 vim.keymap.set('n', '<C-s>', ':Telescope oldfiles<CR>')
 
 -- Enter a blank line above or below the cursor.
-vim.keymap.set('n', '<Leader>k', 'O<Esc>j')
-vim.keymap.set('n', '<Leader>j', 'o<Esc>k')
+vim.keymap.set('n', '<Leader>O', 'O<Esc>j')
+vim.keymap.set('n', '<Leader>o', 'o<Esc>k')
 
 -- Easier moving between windows
 vim.keymap.set('n', '<C-h>', '<C-w>h')
@@ -138,8 +138,11 @@ vim.keymap.set('n', 'c#', "?\\<<C-R>=expand('<cword>')<CR>\\>\\C<CR>``cgN")
 vim.keymap.set('n', 'n', 'nzz')
 vim.keymap.set('n', 'N', 'Nzz')
 
--- Toggle a fold
-vim.keymap.set('n', '<Leader>f', 'za')
+-- Leap
+vim.keymap.set('n', '<Leader>f', function ()
+  local current_window = vim.fn.win_getid()
+  require('leap').leap({ target_windows = { current_window } })
+end)
 
 -- Turn off search highlights
 vim.keymap.set('n', '<Leader>/', ':nohlsearch<CR>')
@@ -203,15 +206,11 @@ vim.api.nvim_create_user_command('Diffdevelopment',
 -------------------------------------------------------------------------------
 vim.api.nvim_create_autocmd({ "VimEnter" }, {
     callback = function(data)
-        -- buffer is a directory
-        local directory = vim.fn.isdirectory(data.file) == 1
-
-        if not directory then
+        local is_directory = vim.fn.isdirectory(data.file) == 1
+        if not is_directory then
             return
         end
-        -- change to the directory
         vim.cmd.cd(data.file)
-        -- open the tree
         require("nvim-tree.api").tree.open()
     end
 })
@@ -225,41 +224,58 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- Format files on save
-local formatAutogroup = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true })
+local format_augroup = vim.api.nvim_create_augroup('FormatAutogroup', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePost', {
-    group = formatAutogroup,
+    group = format_augroup,
     pattern = {'*.go', '*.ts', '*.rs'},
     command = 'FormatWrite'
 })
 
 -- Show cursorline only in active window
-local cursorlineActiveWindow = vim.api.nvim_create_augroup('CursorlineActiveWindow', { clear = true })
+local cursorline_active_window = vim.api.nvim_create_augroup('CursorlineActiveWindow', { clear = true })
 vim.api.nvim_create_autocmd({ 'VimEnter', 'WinEnter', 'BufWinEnter' }, {
-    group = cursorlineActiveWindow,
+    group = cursorline_active_window,
     command = 'setlocal cursorline'
 })
 vim.api.nvim_create_autocmd({ 'WinLeave' }, {
-    group = cursorlineActiveWindow,
+    group = cursorline_active_window,
     command = 'setlocal nocursorline'
 })
 
 -- Quickscope colors
-local quickscopeColors = vim.api.nvim_create_augroup('QuickscopeColors', { clear = true })
+local quickscope_colors = vim.api.nvim_create_augroup('QuickscopeColors', { clear = true })
 vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-    group = quickscopeColors,
+    group = quickscope_colors,
     command = "highlight QuickScopePrimary guifg='#afff5f' gui=none ctermfg=155 cterm=underline",
 })
 vim.api.nvim_create_autocmd({ 'ColorScheme' }, {
-    group = quickscopeColors,
+    group = quickscope_colors,
     command = "highlight QuickScopeSecondary guifg='#FF00FF' gui=none ctermfg=201 cterm=underline",
 })
 
 -- Turn off expandtab in go files
-local noExpandtab = vim.api.nvim_create_augroup('NoExpandtab', { clear = true })
+local no_expand_tab = vim.api.nvim_create_augroup('NoExpandtab', { clear = true })
 vim.api.nvim_create_autocmd({ 'FileType', 'WinEnter', 'BufWinEnter' }, {
-    group = noExpandtab,
+    group = no_expand_tab,
     pattern = { '*.go' },
     command = 'set noexpandtab'
+})
+
+local leap_tint_group = vim.api.nvim_create_augroup('leap-ast', {})
+vim.api.nvim_create_autocmd("User", {
+    group = leap_tint_group,
+    pattern = 'LeapEnter',
+    callback = function()
+        require("tint").tint(vim.api.nvim_get_current_win())
+    end
+})
+
+vim.api.nvim_create_autocmd("User", {
+    group = leap_tint_group,
+    pattern = 'LeapLeave',
+    callback = function()
+        require("tint").untint(vim.api.nvim_get_current_win())
+    end
 })
 
 -------------------------------------------------------------------------------
@@ -320,6 +336,18 @@ require('lazy').setup({
         "windwp/nvim-autopairs",
         config = function()
             require("nvim-autopairs").setup{}
+        end
+    },
+    {
+        "levouh/tint.nvim",
+        config = function()
+            require("tint").setup({})
+        end
+    },
+    {
+        "ggandor/leap.nvim",
+        config = function()
+            require("leap").setup({})
         end
     },
     {
@@ -597,7 +625,7 @@ require('lazy').setup({
 
 
             -- Rust language server
-            lsp.configure('rust-analyzer', {})
+            lsp.configure('rust_analyzer')
 
             -- Go language server
             lsp.configure('gopls', {
@@ -617,7 +645,7 @@ require('lazy').setup({
                         staticcheck = true,
                         analyses = {
                             ST1006 = false, -- Poorly chosen receiver name (allow this/self)
-                            fieldalignment = true,
+                            fieldalignment = false,
                             nilness = true,
                         },
                     },
@@ -631,7 +659,10 @@ require('lazy').setup({
                         plugins = {
                             pycodestyle = {
                                 enabled = true,
-                                ignore = { 'E501' }, -- Line Too long
+                                ignore = { 'E501', 'W503' }, -- Line Too long, line break before binary operator
+                            },
+                            mccabe = {
+                                enabled = false -- Disable cyclomatic complexity
                             }
                         }
                     }
@@ -715,21 +746,18 @@ require('lazy').setup({
     },
 })
 
-local signs = {
-    Error = "",
-    Warn = "",
-    Hint = "",
-    Info = ""
-}
-
+local signs = { Error = "", Warn = "", Hint = "", Info = "" }
 for type, icon in pairs(signs) do
     local hl = "DiagnosticSign" .. type
     vim.fn.sign_define(hl, {text = icon, texthl = hl, numhl = hl})
 end
 
 -----------------------------------------------------
--- Colorschemes
+-- Colorschemes/Highlighting
 -----------------------------------------------------
+
+-- I'll toggle this manually
+vim.cmd[[lua require("tint").disable()]]
 
 -- Ayu
 vim.cmd.colorscheme('ayu')
