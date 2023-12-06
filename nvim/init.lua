@@ -59,7 +59,7 @@ vim.g['makery_config'] = {
     },
     ['~/dev/nancust'] = {
         make = {
-            makeprg = 'docker exec --workdir /nancust nancust_dev_env make'
+            makeprg = 'docker exec --workdir /nancust nanitor_dev_env make'
         }
     }
 }
@@ -69,7 +69,6 @@ vim.g['makery_config'] = {
 -------------------------------------------------------------------------------
 local silent = { silent = true }
 
--- Tab/Shift+tab to indent/dedent
 vim.g.mapleader = ' '
 
 -- Move to end of line in insert mode
@@ -95,9 +94,6 @@ vim.keymap.set('n', '<F1>', ':NvimTreeToggle<CR>')
 
 -- Toggle symbol outline
 vim.keymap.set('n', '<F3>', ':SymbolsOutline<CR>')
-
--- Toggle diagnostics lines
-vim.keymap.set('n', '<Leader>l', ':lua require("lsp_lines").toggle()<CR>')
 
 -- Use find_files if not in git repository
 vim.keymap.set('n', '<C-p>',
@@ -198,13 +194,13 @@ vim.keymap.set('n', '<Leader>gs', toggleFugitiveGit, silent)
 
 -- Diffs current local branch against origin/development
 vim.api.nvim_create_user_command('Diffdevelopment',
-    'DiffviewOpen origin/development... --imply-local', {}
+    'DiffviewOpen origin/development', {}
 )
 
 -------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
-vim.api.nvim_create_autocmd({ "VimEnter" }, {
+vim.api.nvim_create_autocmd("VimEnter", {
     callback = function(data)
         local is_directory = vim.fn.isdirectory(data.file) == 1
         if not is_directory then
@@ -213,6 +209,10 @@ vim.api.nvim_create_autocmd({ "VimEnter" }, {
         vim.cmd.cd(data.file)
         require("nvim-tree.api").tree.open()
     end
+})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    command = 'NoNeckPain'
 })
 
 -- Highlight yanked text
@@ -278,6 +278,21 @@ vim.api.nvim_create_autocmd("User", {
     end
 })
 
+-- Format templ files.
+vim.api.nvim_create_autocmd(
+  {
+    -- 'BufWritePre' event triggers just before a buffer is written to file.
+    "BufWritePre"
+  },
+  {
+    pattern = {"*.templ"},
+    callback = function()
+      -- Format the current buffer using Neovim's built-in LSP (Language Server Protocol).
+      vim.lsp.buf.format()
+    end,
+  }
+)
+
 -------------------------------------------------------------------------------
 -- Bootstrap Package Manager
 -------------------------------------------------------------------------------
@@ -303,27 +318,33 @@ require('lazy').setup({
     { 'tpope/vim-fugitive' },
     { 'romainl/vim-qf' },
     { 'kevinhwang91/nvim-bqf' },
+    { 'vrischmann/tree-sitter-templ' },
     { 'ethanholz/nvim-lastplace', config = true },
     { 'numToStr/Comment.nvim', config = true },
+    {
+      'shortcuts/no-neck-pain.nvim',
+      config = function()
+        require("no-neck-pain").setup({
+          width = 230,
+          buffers = {
+            wo = {
+              fillchars = "eob: ",
+            },
+            right = {
+                enabled = true
+            }
+          },
+       })
+      end
+    },
+    {
+      'sontungexpt/buffer-closer',
+      event = "VeryLazy",
+    },
     {
         'nvim-tree/nvim-web-devicons',
         config = function()
             require('nvim-web-devicons').setup()
-        end
-    },
-    {
-        'folke/trouble.nvim',
-        dependencies = 'nvim-tree/nvim-web-devicons',
-        config = function()
-            require("trouble").setup({
-                signs = {
-                    error = "",
-                    warning = "",
-                    hint = "",
-                    information = "",
-                    other = "﫠"
-                },
-            })
         end
     },
     {
@@ -548,6 +569,8 @@ require('lazy').setup({
 
                             ['<C-x>'] = actions.delete_buffer,
 
+                            ['<M-p>'] = require('telescope.actions.layout').toggle_preview,
+
                             ['<C-o>'] = live_grep_actions.quote_prompt(),
                         }
                     }
@@ -586,6 +609,9 @@ require('lazy').setup({
                     },
                     rust = {
                         require('formatter.filetypes.rust').rustfmt,
+                    },
+                    python = {
+                        require('formatter.filetypes.python').ruff,
                     },
                 }
             })
@@ -633,20 +659,22 @@ require('lazy').setup({
                     gopls = {
                         env = {
                             GOOS = 'linux',
-                            GOFLAGS = '-tags=linux,windows',
+                            GOFLAGS = '-tags=linux',
                         },
                         buildFlags = {
-                            '-tags=!windows,integration'
+                            '-tags=linux,!windows,integration'
                         },
                         directoryFilters = {
                             '-cmd/nanitor-scap/internal/scap',
                             '-cmd/nanitor-scap/internal/openscap',
+                            '-contrib/submodules',
                         },
                         staticcheck = true,
                         analyses = {
                             ST1006 = false, -- Poorly chosen receiver name (allow this/self)
+                            ST1005 = false, -- Error strings should not be capitalized
                             fieldalignment = false,
-                            nilness = true,
+                            nilness = false,
                         },
                     },
                 }
@@ -678,25 +706,25 @@ require('lazy').setup({
                 }
             })
 
-            vim.diagnostic.config {
-                virtual_text = false,
-                underline = false
-            }
-
             lsp.setup()
 
         end
     },
     {
-        url = 'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
-        config = function()
-            require('lsp_lines').setup()
-        end,
-    },
-    {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         config = function()
+
+            local treesitter_parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+            treesitter_parser_config.templ = {
+              install_info = {
+                url = "https://github.com/vrischmann/tree-sitter-templ.git",
+                files = {"src/parser.c", "src/scanner.c"},
+                branch = "master",
+              },
+            }
+            vim.treesitter.language.register('templ', 'templ')
+
             require('nvim-treesitter.configs').setup {
                 ensure_installed = { 'python', 'lua', 'go', 'typescript', 'rust' },
                 highlight = { enable = true, },
@@ -743,6 +771,27 @@ require('lazy').setup({
                 }
             })
         end
+    },
+    {
+      'chentoast/marks.nvim',
+      config = function()
+        require'marks'.setup({
+          force_write_shada = true,  -- Deleted marks won't reappear
+          mappings = {
+            set_next = "mm",
+            next = "]a",
+            prev = "[a",
+          }
+        })
+      end
+    },
+    {
+        "zeioth/garbage-day.nvim",
+        dependencies = "neovim/nvim-lspconfig",
+        event = "VeryLazy",
+        opts = {
+            -- your options here
+        }
     },
 })
 
