@@ -128,10 +128,9 @@ require("lazy").setup({
 				tint = -15,
 				highlight_ignore_patterns = { "WinSeparator", "Status.*", "LeapLabelPrimary" },
 			})
-			-- require("tint").disable()
+			require("tint").disable()
 		end,
 	},
-
 	{
 		"ggandor/leap.nvim",
 		config = function()
