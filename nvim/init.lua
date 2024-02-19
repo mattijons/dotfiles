@@ -122,6 +122,25 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"levouh/tint.nvim",
+		config = function()
+			require("tint").setup({
+				tint = -15,
+				highlight_ignore_patterns = { "WinSeparator", "Status.*", "LeapLabelPrimary" },
+			})
+			-- require("tint").disable()
+		end,
+	},
+
+	{
+		"ggandor/leap.nvim",
+		config = function()
+			require("leap").setup({})
+			require("leap").opts.safe_labels = {}
+			require("leap").opts.highlight_unlabeled_phase_one_targets = true
+		end,
+	},
+	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = "nvim-tree/nvim-web-devicons",
 		config = function()
@@ -695,6 +714,12 @@ local function go_if_err()
 end
 vim.keymap.set("n", "<leader>ie", go_if_err)
 
+-- Leap
+vim.keymap.set("n", "<leader>j", function()
+	local current_window = vim.fn.win_getid()
+	require("leap").leap({ target_windows = { current_window } })
+end)
+
 -------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
@@ -715,6 +740,23 @@ vim.api.nvim_create_autocmd({ "FileType", "WinEnter", "BufWinEnter" }, {
 	group = no_expand_tab,
 	pattern = { "*.go" },
 	command = "set noexpandtab",
+})
+
+-- Tint window when using Leap
+local leap_tint_group = vim.api.nvim_create_augroup("leap-ast", {})
+vim.api.nvim_create_autocmd("User", {
+	group = leap_tint_group,
+	pattern = "LeapEnter",
+	callback = function()
+		require("tint").tint(vim.api.nvim_get_current_win())
+	end,
+})
+vim.api.nvim_create_autocmd("User", {
+	group = leap_tint_group,
+	pattern = "LeapLeave",
+	callback = function()
+		require("tint").untint(vim.api.nvim_get_current_win())
+	end,
 })
 
 -------------------------------------------------------------------------------
@@ -743,3 +785,6 @@ vim.api.nvim_set_hl(0, "GitSignsChangedDelete", { fg = "#FF8F40", bg = "None", d
 
 -- Treesitter
 vim.api.nvim_set_hl(0, "@variable.member.go", { fg = "#B3B1AD" })
+
+-- Leap
+vim.api.nvim_set_hl(0, "LeapLabelPrimary", { fg = "#afff5f" })
