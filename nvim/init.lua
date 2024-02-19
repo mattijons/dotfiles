@@ -16,6 +16,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	{ "romainl/vim-qf" },
+	{ "tpope/vim-repeat" },
 	{ "wellle/targets.vim" },
 	{ "tpope/vim-fugitive" },
 	{ "unblevable/quick-scope" },
@@ -375,6 +376,10 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"L3MON4D3/LuaSnip",
+		version = "v2.*",
+	},
+	{
 		"VonHeikemen/lsp-zero.nvim",
 		branch = "v3.x",
 		dependencies = {
@@ -449,6 +454,7 @@ require("lazy").setup({
 			})
 			local cmp = require("cmp")
 			cmp.setup({
+				completion = { keyword_length = 3 },
 				sources = {
 					{ name = "nvim_lsp" },
 					{ name = "nvim_lua" },
@@ -496,6 +502,8 @@ require("lazy").setup({
 				formatters_by_ft = {
 					go = { "gofmt" },
 					lua = { "stylua" },
+					sql = { "pg_format" },
+					tex = { "latexindent" },
 					rust = { "rustfmt" },
 					typescript = { "eslint_d" },
 				},
@@ -668,6 +676,24 @@ end)
 vim.keymap.set("n", "<leader>3", function()
 	harpoon:list():select(3)
 end)
+
+-- Insert an if err != nil {...}
+local function go_if_err()
+	local byte_offset = vim.fn.wordcount().cursor_bytes
+	local cmd = ("~/go/bin/iferr" .. " -pos " .. byte_offset)
+	local data = vim.fn.systemlist(cmd, vim.fn.bufnr("%"))
+
+	if vim.v.shell_error ~= 0 then
+		vim.notify("command " .. cmd .. " exited with code " .. vim.v.shell_error, "error")
+		return
+	end
+
+	local pos = vim.fn.getcurpos()[2]
+	vim.fn.append(pos, data)
+	vim.cmd([[silent normal! j=2j]])
+	vim.fn.setpos(".", pos)
+end
+vim.keymap.set("n", "<leader>ie", go_if_err)
 
 -------------------------------------------------------------------------------
 -- Autocommands
