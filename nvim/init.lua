@@ -154,6 +154,17 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"kevinhwang91/nvim-ufo",
+		dependencies = "kevinhwang91/promise-async",
+		config = function()
+			require("ufo").setup({
+				provider_selector = function(bufnr, filetype, buftype)
+					return { "treesitter", "indent" }
+				end,
+			})
+		end,
+	},
+	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -573,6 +584,11 @@ vim.opt.listchars = {
 	nbsp = ".",
 }
 
+vim.opt.foldcolumn = "0"
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldenable = true
+
 -------------------------------------------------------------------------------
 -- Keymaps
 -------------------------------------------------------------------------------
@@ -713,6 +729,9 @@ local function go_if_err()
 	vim.fn.setpos(".", pos)
 end
 vim.keymap.set("n", "<leader>ie", go_if_err)
+
+-- Fold Go's 'err != nil'
+vim.keymap.set("n", "<leader>fe", ":g/s*err != nil /normal za<CR><C-o>")
 
 -- Leap
 vim.keymap.set("n", "<leader>j", function()
