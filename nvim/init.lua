@@ -20,6 +20,8 @@ require("lazy").setup({
 	{ "wellle/targets.vim" },
 	{ "tpope/vim-fugitive" },
 	{ "unblevable/quick-scope" },
+	{ "andymass/vim-matchup" },
+	{ "lervag/vimtex" },
 	{
 		"windwp/nvim-autopairs",
 		config = function()
@@ -122,24 +124,6 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"levouh/tint.nvim",
-		config = function()
-			require("tint").setup({
-				tint = -15,
-				highlight_ignore_patterns = { "WinSeparator", "Status.*", "LeapLabelPrimary" },
-			})
-			require("tint").disable()
-		end,
-	},
-	{
-		"ggandor/leap.nvim",
-		config = function()
-			require("leap").setup({})
-			require("leap").opts.safe_labels = {}
-			require("leap").opts.highlight_unlabeled_phase_one_targets = true
-		end,
-	},
-	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = "nvim-tree/nvim-web-devicons",
 		config = function()
@@ -164,11 +148,26 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"ThePrimeagen/harpoon",
-		branch = "harpoon2",
-		dependencies = { "nvim-lua/plenary.nvim" },
+		"cbochs/grapple.nvim",
+		dependencies = {
+			{ "nvim-tree/nvim-web-devicons", lazy = true },
+		},
+		event = { "BufReadPost", "BufNewFile" },
+		cmd = "Grapple",
 		config = function()
-			require("harpoon"):setup()
+			require("grapple").setup({
+				scope = "git_branch",
+			})
+		end,
+	},
+	{
+		"ThePrimeagen/refactoring.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+		},
+		config = function()
+			require("refactoring").setup()
 		end,
 	},
 	{
@@ -247,6 +246,9 @@ require("lazy").setup({
 		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter.configs").setup({
+				matchup = {
+					enable = true,
+				},
 				ensure_installed = {
 					"go",
 					"python",
@@ -294,9 +296,14 @@ require("lazy").setup({
 						CurSearch = { fg = "#000000", bg = "#05ffa1" },
 						Tag = { fg = "#000000" },
 						NonText = { fg = "#393f49" },
+						Visual = { bg = "#313C47" },
+						CursorLineNr = { fg = "#E6B450", bg = "#0A0E14" },
 					}
 				end,
 			})
+			vim.cmd.colorscheme("ayu")
+			-- Treesitter
+			vim.api.nvim_set_hl(0, "@variable.member.go", { fg = "#B3B1AD" })
 		end,
 	},
 	{
@@ -319,7 +326,7 @@ require("lazy").setup({
 					follow_files = true,
 				},
 				auto_attach = true,
-				attach_to_untracked = false,
+				attach_to_untracked = true,
 				current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
 				current_line_blame_opts = {
 					virt_text = true,
@@ -432,6 +439,7 @@ require("lazy").setup({
 				lsp_zero.default_keymaps({ buffer = bufnr })
 			end)
 
+			-- LSP
 			require("mason").setup()
 			require("mason-lspconfig").setup({
 				ensure_installed = { "gopls", "tsserver", "pylsp", "rust_analyzer" },
@@ -444,8 +452,7 @@ require("lazy").setup({
 									plugins = {
 										pycodestyle = {
 											enabled = true,
-											-- Line Too long, line break before binary operator
-											ignore = { "E226", "E501", "W503" },
+											ignore = { "E226", "E266", "E501", "W503" },
 										},
 									},
 								},
@@ -531,7 +538,6 @@ require("lazy").setup({
 				formatters_by_ft = {
 					go = { "gofmt" },
 					lua = { "stylua" },
-					sql = { "pg_format" },
 					tex = { "latexindent" },
 					rust = { "rustfmt" },
 					typescript = { "eslint_d" },
@@ -687,29 +693,14 @@ vim.keymap.set("n", "<leader>q", "<Plug>(qf_qf_toggle)<CR>")
 -- Diff against origin/development
 vim.keymap.set("n", "<leader>dd", ":Diffdevelopment<CR>")
 
--- Harpoon
-local harpoon = require("harpoon")
-vim.keymap.set("n", "<leader>a", function()
-	harpoon:list():append()
-end)
-vim.keymap.set("n", "<leader>l", function()
-	harpoon.ui:toggle_quick_menu(harpoon:list())
-end)
-vim.keymap.set("n", "[l", function()
-	harpoon:list():prev({ ui_nav_wrap = true })
-end)
-vim.keymap.set("n", "]l", function()
-	harpoon:list():next({ ui_nav_wrap = true })
-end)
-vim.keymap.set("n", "<leader>1", function()
-	harpoon:list():select(1)
-end)
-vim.keymap.set("n", "<leader>2", function()
-	harpoon:list():select(2)
-end)
-vim.keymap.set("n", "<leader>3", function()
-	harpoon:list():select(3)
-end)
+-- Grapple
+vim.keymap.set("n", "<leader>a", require("grapple").tag)
+vim.keymap.set("n", "<leader>l", require("grapple").toggle_tags)
+-- vim.keymap.set("n", "<leader>M", require("grapple").toggle_tags)
+vim.keymap.set("n", "<leader>1", "<cmd>Grapple select index=1<cr>")
+vim.keymap.set("n", "<leader>2", "<cmd>Grapple select index=2<cr>")
+vim.keymap.set("n", "<leader>3", "<cmd>Grapple select index=3<cr>")
+vim.keymap.set("n", "<leader>4", "<cmd>Grapple select index=4<cr>")
 
 -- Insert an if err != nil {...}
 local function go_if_err()
@@ -730,18 +721,22 @@ end
 vim.keymap.set("n", "<leader>ie", go_if_err)
 
 -- Fold Go's 'err != nil'
-vim.keymap.set("n", "<leader>fe", ":g/s*err != nil /normal za<CR><C-o>")
+vim.keymap.set("n", "<leader>fe", ":g/s*err != nil /normal za<CR><C-o>:nohlsearch<CR>")
 
--- Leap
-vim.keymap.set("n", "<leader>j", function()
-	local current_window = vim.fn.win_getid()
-	require("leap").leap({ target_windows = { current_window } })
+-- Insert a debug print
+vim.keymap.set("n", "<leader>ip", function()
+	require("refactoring").debug.printf({ below = false })
+end)
+
+-- Insert a debug print variable
+vim.keymap.set({ "x", "n" }, "<leader>id", function()
+	require("refactoring").debug.print_var()
 end)
 
 -------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
----- Show cursorline only in active window
+-- Show cursorline only in active window
 local cursorline_active_window = vim.api.nvim_create_augroup("CursorlineActiveWindow", { clear = true })
 vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter", "BufWinEnter" }, {
 	group = cursorline_active_window,
@@ -760,23 +755,6 @@ vim.api.nvim_create_autocmd({ "FileType", "WinEnter", "BufWinEnter" }, {
 	command = "set noexpandtab",
 })
 
--- Tint window when using Leap
-local leap_tint_group = vim.api.nvim_create_augroup("leap-ast", {})
-vim.api.nvim_create_autocmd("User", {
-	group = leap_tint_group,
-	pattern = "LeapEnter",
-	callback = function()
-		require("tint").tint(vim.api.nvim_get_current_win())
-	end,
-})
-vim.api.nvim_create_autocmd("User", {
-	group = leap_tint_group,
-	pattern = "LeapLeave",
-	callback = function()
-		require("tint").untint(vim.api.nvim_get_current_win())
-	end,
-})
-
 -------------------------------------------------------------------------------
 -- Commands
 -------------------------------------------------------------------------------
@@ -786,7 +764,6 @@ vim.api.nvim_create_user_command("Diffdevelopment", "DiffviewOpen origin/develop
 -------------------------------------------------------------------------------
 -- Colorscheme/Theming
 -------------------------------------------------------------------------------
-vim.cmd.colorscheme("ayu")
 vim.api.nvim_set_hl(0, "CursorLine", { fg = "none", bg = "gray12", default = false })
 vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#242A35", bg = "None", default = true })
 
@@ -794,15 +771,9 @@ vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#242A35", bg = "None", default = 
 vim.api.nvim_set_hl(0, "QuickScopePrimary", { fg = "#afff5f" })
 vim.api.nvim_set_hl(0, "QuickScopeSecondary", { fg = "#FF00FF" })
 
--- Gitsigns colors
+-- Gitsign Colors
 vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = "#FFEE99", bg = "None", default = true })
 vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#59C2FF", bg = "None", default = false })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#FF3333", bg = "None", default = false })
 vim.api.nvim_set_hl(0, "GitSignsTopDelete", { fg = "#FF3333", bg = "None", default = false })
 vim.api.nvim_set_hl(0, "GitSignsChangedDelete", { fg = "#FF8F40", bg = "None", default = false })
-
--- Treesitter
-vim.api.nvim_set_hl(0, "@variable.member.go", { fg = "#B3B1AD" })
-
--- Leap
-vim.api.nvim_set_hl(0, "LeapLabelPrimary", { fg = "#afff5f" })
