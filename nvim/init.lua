@@ -95,6 +95,26 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+			"MunifTanjim/nui.nvim",
+		},
+		config = function()
+			require("neo-tree").setup({
+				window = {
+					mappings = {
+						["[c"] = "prev_git_modified",
+						["]c"] = "next_git_modified",
+						["z"] = "", -- allows for 'zz'
+					},
+				},
+			})
+		end,
+	},
+	{
 		"nvim-tree/nvim-tree.lua",
 		version = "*",
 		lazy = false,
@@ -304,6 +324,7 @@ require("lazy").setup({
 			vim.cmd.colorscheme("ayu")
 			-- Treesitter
 			vim.api.nvim_set_hl(0, "@variable.member.go", { fg = "#B3B1AD" })
+			vim.api.nvim_set_hl(0, "@type.builtin.go", { fg = "#61afef" }) -- blue
 		end,
 	},
 	{
@@ -666,7 +687,7 @@ vim.keymap.set("n", "<C-s>", ":Telescope oldfiles<CR>")
 
 -- Toggle nvim-tree
 vim.keymap.set("n", "<F1>", "<Nop>")
-vim.keymap.set("n", "<F1>", ":NvimTreeToggle<CR>")
+vim.keymap.set("n", "<F1>", ":Neotree toggle<CR>")
 
 -- Run Make inside docker container
 vim.keymap.set("n", "<leader>m", ":Mmake<CR>")
